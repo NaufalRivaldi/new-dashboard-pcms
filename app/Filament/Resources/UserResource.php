@@ -69,6 +69,8 @@ class UserResource extends Resource
                 Tables\Columns\ToggleColumn::make('status'),
                 Tables\Columns\TextColumn::make('roles')
                     ->formatStateUsing(fn (string $state): string => json_decode($state, true)['name']),
+                Tables\Columns\ViewColumn::make('branches')
+                    ->view('filament.tables.columns.user-branches')
             ])
             ->filters([
                 SelectFilter::make('roles')
@@ -89,7 +91,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\BranchesRelationManager::class,
         ];
     }
 
