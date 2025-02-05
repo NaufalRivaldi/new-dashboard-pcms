@@ -27,7 +27,7 @@ class BranchResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Label')
+                Forms\Components\Section::make('Details')
                     ->schema([
                         Forms\Components\TextInput::make('code')
                             ->required()

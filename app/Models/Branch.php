@@ -31,4 +31,9 @@ class Branch extends Model
     {
         return $this->hasMany(Ownership::class);
     }
+
+    public function importedFees(): HasMany
+    {
+        return $this->hasMany(ImportedFee::class);
+    }
 }
