@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\ImportedFeeResource\Pages;
+namespace App\Filament\Resources\ImportedActiveStudentResource\Pages;
 
-use App\Filament\Resources\ImportedFeeResource;
+use App\Filament\Resources\ImportedActiveStudentResource;
 use App\Services\ImportService;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateImportedFee extends CreateRecord
+class CreateImportedActiveStudent extends CreateRecord
 {
-    protected static string $resource = ImportedFeeResource::class;
+    protected static string $resource = ImportedActiveStudentResource::class;
 
     private $isNotificationSended = false;
 
@@ -30,13 +30,13 @@ class CreateImportedFee extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedFeeExists = app(ImportService::class)->isImportedFeeExists(
+        $isImportedActiveStudentExists = app(ImportService::class)->isImportedActiveStudentExists(
             $month,
             $year,
             $branchId,
         );
 
-        if ($isImportedFeeExists) {
+        if ($isImportedActiveStudentExists) {
             return [
                 $this->getCancelFormAction()
             ];
@@ -48,16 +48,16 @@ class CreateImportedFee extends CreateRecord
     protected function getCreateFormAction(): Action
     {
         return parent::getCreateFormAction()
-            ->visible(fn () => !$this->isImportedFeeExists());
+            ->visible(fn () => !$this->isImportedActiveStudentExists());
     }
 
     protected function getCreateAnotherFormAction(): Action
     {
         return parent::getCreateAnotherFormAction()
-            ->visible(fn () => !$this->isImportedFeeExists());
+            ->visible(fn () => !$this->isImportedActiveStudentExists());
     }
 
-    private function isImportedFeeExists(): bool
+    private function isImportedActiveStudentExists(): bool
     {
         $data = $this->data;
 
@@ -65,14 +65,14 @@ class CreateImportedFee extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedFeeExists = app(ImportService::class)->isImportedFeeExists(
+        $isImportedActiveStudentExists = app(ImportService::class)->isImportedActiveStudentExists(
             $month,
             $year,
             $branchId,
         );
 
         if (
-            $isImportedFeeExists
+            $isImportedActiveStudentExists
             && !$this->isNotificationSended
         ) {
             Notification::make()
@@ -85,6 +85,6 @@ class CreateImportedFee extends CreateRecord
             $this->isNotificationSended = true;
         }
 
-        return $isImportedFeeExists;
+        return $isImportedActiveStudentExists;
     }
 }

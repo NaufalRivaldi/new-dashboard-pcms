@@ -108,4 +108,9 @@ class UserResource extends Resource
     {
         return static::getModel()::count();
     }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return __('The number of users');
+    }
 }

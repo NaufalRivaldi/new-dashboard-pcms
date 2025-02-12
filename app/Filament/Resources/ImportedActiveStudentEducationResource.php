@@ -3,11 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Enums\Month;
-use App\Enums\PaymentType;
-use App\Filament\Imports\ImportedFeeImporter;
-use App\Filament\Resources\ImportedFeeResource\Pages;
-use App\Filament\Resources\ImportedFeeResource\RelationManagers;
-use App\Models\ImportedFee;
+use App\Filament\Resources\ImportedActiveStudentEducationResource\Pages;
+use App\Filament\Resources\ImportedActiveStudentEducationResource\RelationManagers;
+use App\Models\ImportedActiveStudentEducation;
 use App\Services\FilterService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,24 +13,21 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ImportAction;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\Rules\File;
 
-class ImportedFeeResource extends Resource
+class ImportedActiveStudentEducationResource extends Resource
 {
-    protected static ?string $model = ImportedFee::class;
+    protected static ?string $model = ImportedActiveStudentEducation::class;
 
-    protected static ?string $navigationLabel = 'LA03';
+    protected static ?string $navigationLabel = 'LA07';
 
     protected static ?string $navigationIcon = 'heroicon-o-folder-arrow-down';
 
     protected static ?string $navigationGroup = 'Imports';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
@@ -81,27 +76,16 @@ class ImportedFeeResource extends Resource
                                 ->required()
                                 ->numeric()
                                 ->readOnly()
-                                ->prefix('Rp.')
+                                ->suffix('Stundents')
                                 ->default(0),
                             Forms\Components\Repeater::make('details')
                                 ->label('')
                                 ->relationship('details')
                                 ->schema([
-                                    Forms\Components\Select::make('type')
-                                        ->options(PaymentType::class)
-                                        ->searchable()
-                                        ->required(),
-                                    Forms\Components\TextInput::make('payer_name'),
-                                    Forms\Components\TextInput::make('nominal')
-                                        ->required()
-                                        ->numeric()
-                                        ->prefix('Rp.')
-                                        ->default(0)
-                                        ->live(onBlur: true),
-                                    Forms\Components\Select::make('lesson_id')
-                                        ->label(__('Lesson'))
+                                    Forms\Components\Select::make('education_id')
+                                        ->label(__('Education'))
                                         ->relationship(
-                                            name: 'lesson',
+                                            name: 'education',
                                             titleAttribute: 'name',
                                             modifyQueryUsing: function (Builder $query) {
                                                 return $query->select('id', 'name');
@@ -109,10 +93,16 @@ class ImportedFeeResource extends Resource
                                         )
                                         ->searchable()
                                         ->preload(),
+                                    Forms\Components\TextInput::make('total')
+                                        ->required()
+                                        ->numeric()
+                                        ->suffix('Stundents')
+                                        ->default(0)
+                                        ->live(onBlur: true),
                                 ])
                                 ->addAction(function (Get $get, Set $set) {
                                     $total = collect($get('details'))
-                                        ->pluck('nominal')
+                                        ->pluck('total')
                                         ->sum();
 
                                     $set('total', $total);
@@ -143,7 +133,6 @@ class ImportedFeeResource extends Resource
                     ->searchable(isIndividual:true),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
-                    ->prefix('Rp. ')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
@@ -169,16 +158,6 @@ class ImportedFeeResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->headerActions([
-                ImportAction::make()
-                    ->importer(ImportedFeeImporter::class)
-                    ->label(__('Import Data'))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->csvDelimiter(';')
-                    ->fileRules([
-                        File::types(['csv', 'txt'])->max((1024*2)),
-                    ]),
             ]);
     }
 
@@ -192,9 +171,9 @@ class ImportedFeeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListImportedFees::route('/'),
-            'create' => Pages\CreateImportedFee::route('/create'),
-            'edit' => Pages\EditImportedFee::route('/{record}/edit'),
+            'index' => Pages\ListImportedActiveStudentEducation::route('/'),
+            'create' => Pages\CreateImportedActiveStudentEducation::route('/create'),
+            'edit' => Pages\EditImportedActiveStudentEducation::route('/{record}/edit'),
         ];
     }
 }

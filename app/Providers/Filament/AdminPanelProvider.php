@@ -55,6 +55,13 @@ class AdminPanelProvider extends PanelProvider
             ->resources([
                 config('filament-logger.activity_resource')
             ])
-            ->plugin(FilamentSpatieRolesPermissionsPlugin::make());
+            ->plugin(FilamentSpatieRolesPermissionsPlugin::make())
+            ->navigationGroups([
+                'Locations',
+                'Masters',
+                'Imports',
+                'Roles and Permissions',
+                'Settings',
+            ]);
     }
 }

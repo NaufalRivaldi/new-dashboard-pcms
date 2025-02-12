@@ -3,36 +3,29 @@
 namespace App\Filament\Resources;
 
 use App\Enums\Month;
-use App\Enums\PaymentType;
-use App\Filament\Imports\ImportedFeeImporter;
-use App\Filament\Resources\ImportedFeeResource\Pages;
-use App\Filament\Resources\ImportedFeeResource\RelationManagers;
-use App\Models\ImportedFee;
+use App\Filament\Resources\ImportedLeaveStudentResource\Pages;
+use App\Filament\Resources\ImportedLeaveStudentResource\RelationManagers;
+use App\Models\ImportedLeaveStudent;
 use App\Services\FilterService;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ImportAction;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\Rules\File;
 
-class ImportedFeeResource extends Resource
+class ImportedLeaveStudentResource extends ImportedNewStudentResource
 {
-    protected static ?string $model = ImportedFee::class;
+    protected static ?string $model = ImportedLeaveStudent::class;
 
-    protected static ?string $navigationLabel = 'LA03';
+    protected static ?string $navigationLabel = 'LA13';
 
     protected static ?string $navigationIcon = 'heroicon-o-folder-arrow-down';
 
     protected static ?string $navigationGroup = 'Imports';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
     {
@@ -80,44 +73,8 @@ class ImportedFeeResource extends Resource
                             Forms\Components\TextInput::make('total')
                                 ->required()
                                 ->numeric()
-                                ->readOnly()
-                                ->prefix('Rp.')
+                                ->suffix('Stundents')
                                 ->default(0),
-                            Forms\Components\Repeater::make('details')
-                                ->label('')
-                                ->relationship('details')
-                                ->schema([
-                                    Forms\Components\Select::make('type')
-                                        ->options(PaymentType::class)
-                                        ->searchable()
-                                        ->required(),
-                                    Forms\Components\TextInput::make('payer_name'),
-                                    Forms\Components\TextInput::make('nominal')
-                                        ->required()
-                                        ->numeric()
-                                        ->prefix('Rp.')
-                                        ->default(0)
-                                        ->live(onBlur: true),
-                                    Forms\Components\Select::make('lesson_id')
-                                        ->label(__('Lesson'))
-                                        ->relationship(
-                                            name: 'lesson',
-                                            titleAttribute: 'name',
-                                            modifyQueryUsing: function (Builder $query) {
-                                                return $query->select('id', 'name');
-                                            }
-                                        )
-                                        ->searchable()
-                                        ->preload(),
-                                ])
-                                ->addAction(function (Get $get, Set $set) {
-                                    $total = collect($get('details'))
-                                        ->pluck('nominal')
-                                        ->sum();
-
-                                    $set('total', $total);
-                                })
-                                ->columns(2),
                         ]),
                     ])->columnSpan([
                         'default' => 3,
@@ -143,7 +100,6 @@ class ImportedFeeResource extends Resource
                     ->searchable(isIndividual:true),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
-                    ->prefix('Rp. ')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
@@ -169,16 +125,6 @@ class ImportedFeeResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->headerActions([
-                ImportAction::make()
-                    ->importer(ImportedFeeImporter::class)
-                    ->label(__('Import Data'))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->csvDelimiter(';')
-                    ->fileRules([
-                        File::types(['csv', 'txt'])->max((1024*2)),
-                    ]),
             ]);
     }
 
@@ -192,9 +138,9 @@ class ImportedFeeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListImportedFees::route('/'),
-            'create' => Pages\CreateImportedFee::route('/create'),
-            'edit' => Pages\EditImportedFee::route('/{record}/edit'),
+            'index' => Pages\ListImportedLeaveStudents::route('/'),
+            'create' => Pages\CreateImportedLeaveStudent::route('/create'),
+            'edit' => Pages\EditImportedLeaveStudent::route('/{record}/edit'),
         ];
     }
 }
