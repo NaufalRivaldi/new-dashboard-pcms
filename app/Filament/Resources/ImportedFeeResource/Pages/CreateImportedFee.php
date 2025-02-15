@@ -59,13 +59,15 @@ class CreateImportedFee extends CreateRecord
 
     private function isImportedFeeExists(): bool
     {
+        $importService = app(ImportService::class);
+
         $data = $this->data;
 
         $month = $data['month'];
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedFeeExists = app(ImportService::class)->isImportedFeeExists(
+        $isImportedFeeExists = $importService->isImportedFeeExists(
             $month,
             $year,
             $branchId,
@@ -75,12 +77,7 @@ class CreateImportedFee extends CreateRecord
             $isImportedFeeExists
             && !$this->isNotificationSended
         ) {
-            Notification::make()
-                ->title(__('This imported data already exists!'))
-                ->body(__('Please use a different branch, month, or year.'))
-                ->danger()
-                ->duration(5000)
-                ->send();
+            $importService->sendNotificationDataExists();
 
             $this->isNotificationSended = true;
         }

@@ -21,6 +21,13 @@ enum Month: string implements HasLabel
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return __($this->name);
+    }
+
+    public static function name(int $month): string
+    {
+        $case = collect(self::cases())->firstWhere('value', $month);
+
+        return $case->name ?? '';
     }
 }

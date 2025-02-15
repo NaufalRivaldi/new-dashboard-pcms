@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,10 +16,10 @@ class Summary extends Model
         'course_fee',
         'total_fee',
         'royalty',
-        'student_active',
-        'student_new',
-        'student_out',
-        'student_leave',
+        'active_student',
+        'new_student',
+        'inactive_student',
+        'leave_student',
         'status',
         'branch_id',
         'user_id',
@@ -45,5 +46,25 @@ class Summary extends Model
     public function summaryActiveStudentLesson(): HasMany
     {
         return $this->hasMany(SummaryActiveStudentLesson::class);
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function scopePending(Builder $query)
+    {
+        $query->where('status', false);
+    }
+
+    public function getIsApprovedAttribute(): bool
+    {
+        return $this->status == true;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ImportedActiveStudentEducationResource\Pages;
 
 use App\Filament\Resources\ImportedActiveStudentEducationResource;
 use App\Services\ImportService;
+use App\Services\NotificationService;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -59,13 +60,15 @@ class CreateImportedActiveStudentEducation extends CreateRecord
 
     private function isImportedActiveStudentEducationExists(): bool
     {
+        $importService = app(ImportService::class);
+
         $data = $this->data;
 
         $month = $data['month'];
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedActiveStudentEducationExists = app(ImportService::class)->isImportedActiveStudentEducationExists(
+        $isImportedActiveStudentEducationExists = $importService->isImportedActiveStudentEducationExists(
             $month,
             $year,
             $branchId,
@@ -75,12 +78,7 @@ class CreateImportedActiveStudentEducation extends CreateRecord
             $isImportedActiveStudentEducationExists
             && !$this->isNotificationSended
         ) {
-            Notification::make()
-                ->title(__('This imported data already exists!'))
-                ->body(__('Please use a different branch, month, or year.'))
-                ->danger()
-                ->duration(5000)
-                ->send();
+            $importService->sendNotificationDataExists();
 
             $this->isNotificationSended = true;
         }

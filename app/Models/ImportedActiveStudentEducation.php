@@ -16,6 +16,10 @@ class ImportedActiveStudentEducation extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'total' => 'integer',
+    ];
+
     public function details(): HasMany
     {
         return $this->hasMany(ImportedActiveStudentEducationDetail::class);

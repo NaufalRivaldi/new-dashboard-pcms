@@ -6,13 +6,19 @@ use App\Enums\Month;
 use App\Filament\Resources\SummaryResource\Pages;
 use App\Filament\Resources\SummaryResource\RelationManagers;
 use App\Models\Summary;
+use App\Services\FilterService;
+use App\Services\ImportService;
+use App\Services\NotificationService;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Torgodly\Html2Media\Tables\Actions\Html2MediaAction;
 
 class SummaryResource extends Resource
 {
@@ -47,7 +53,10 @@ class SummaryResource extends Resource
                                 ->live(onBlur: true),
                             Forms\Components\Toggle::make('status')
                                 ->label(__('Is Approved?'))
-                                ->required(),
+                                ->required()
+                                ->hidden(
+                                    !auth()->user()->isAdmin
+                                ),
                         ]),
                         Forms\Components\Section::make('Date')->schema([
                             Forms\Components\Select::make('month')
@@ -63,6 +72,55 @@ class SummaryResource extends Resource
                                 ->maxValue(2030)
                                 ->disabledOn('edit')
                                 ->live(onBlur: true),
+                            Forms\Components\Actions::make([
+                                Forms\Components\Actions\Action::make('Generate')
+                                    ->icon('heroicon-m-arrow-path')
+                                    ->hidden(fn (Get $get) => !is_null($get('id')))
+                                    ->action(function (Get $get, Set $set) {
+                                        $branchId = $get('branch_id');
+                                        $month = $get('month');
+                                        $year = $get('year');
+
+                                        if (
+                                            is_null($branchId)
+                                            || is_null($month)
+                                            || is_null($year)
+                                        ) {
+                                            NotificationService::warning(
+                                                title: __('Some data is still empty!'),
+                                                body: __('Make sure the branch, month, and year is get filled.'),
+                                            );
+                                        } else {
+                                            $result = app(ImportService::class)->generateSummaryData(
+                                                $branchId,
+                                                $month,
+                                                $year,
+                                            );
+
+                                            if ($result['status']) {
+
+                                                $set('registration_fee', $result['registration_fee']);
+                                                $set('course_fee', $result['course_fee']);
+                                                $set('total_fee', $result['total_fee']);
+                                                $set('royalty', $result['royalty']);
+                                                $set('active_student', $result['active_student']);
+                                                $set('new_student', $result['new_student']);
+                                                $set('inactive_student', $result['inactive_student']);
+                                                $set('leave_student', $result['leave_student']);
+                                                $set('summary_active_student_education', $result['summary_active_student_education']);
+                                                $set('summary_active_student_lesson', $result['summary_active_student_lesson']);
+
+                                            } else {
+
+                                                NotificationService::warning(
+                                                    title: __('Generate data failed!'),
+                                                    body: $result['message'],
+                                                );
+
+                                            }
+                                        }
+                                    }),
+                            ]),
                         ]),
                     ])->columnSpan([
                         'default' => 3,
@@ -75,17 +133,38 @@ class SummaryResource extends Resource
                                     ->required()
                                     ->numeric()
                                     ->default(0)
-                                    ->live(onBlur: true),
+                                    ->prefix('Rp.')
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        $calculationResult = app(ImportService::class)->calculateTotalAndRoyaltyFee(
+                                            (float) $get('registration_fee'),
+                                            (float) $get('course_fee'),
+                                        );
+
+                                        $set('total_fee', $calculationResult['total']);
+                                        $set('royalty', $calculationResult['royalty']);
+                                    }),
                                 Forms\Components\TextInput::make('course_fee')
                                     ->required()
                                     ->numeric()
                                     ->default(0)
-                                    ->live(onBlur: true),
+                                    ->live(onBlur: true)
+                                    ->prefix('Rp.')
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        $calculationResult = app(ImportService::class)->calculateTotalAndRoyaltyFee(
+                                            (float) $get('registration_fee'),
+                                            (float) $get('course_fee'),
+                                        );
+
+                                        $set('total_fee', $calculationResult['total']);
+                                        $set('royalty', $calculationResult['royalty']);
+                                    }),
                                 Forms\Components\TextInput::make('total_fee')
                                     ->helperText(__('Calculate automated.'))
                                     ->required()
                                     ->numeric()
                                     ->default(0)
+                                    ->prefix('Rp.')
                                     ->readonly(),
                                 Forms\Components\TextInput::make('royalty')
                                     ->label(__('Royalty (10%)'))
@@ -93,6 +172,7 @@ class SummaryResource extends Resource
                                     ->required()
                                     ->numeric()
                                     ->default(0)
+                                    ->prefix('Rp.')
                                     ->readonly(),
                             ])
                             ->columns(2),
@@ -101,19 +181,23 @@ class SummaryResource extends Resource
                                 Forms\Components\TextInput::make('active_student')
                                     ->required()
                                     ->numeric()
-                                    ->default(0),
+                                    ->default(0)
+                                    ->suffix(__('Students')),
                                 Forms\Components\TextInput::make('new_student')
                                     ->required()
                                     ->numeric()
-                                    ->default(0),
+                                    ->default(0)
+                                    ->suffix(__('Students')),
                                 Forms\Components\TextInput::make('inactive_student')
                                     ->required()
                                     ->numeric()
-                                    ->default(0),
+                                    ->default(0)
+                                    ->suffix(__('Students')),
                                 Forms\Components\TextInput::make('leave_student')
                                     ->required()
                                     ->numeric()
-                                    ->default(0),
+                                    ->default(0)
+                                    ->suffix(__('Students')),
                             ])
                             ->columns(2),
                         Forms\Components\Section::make('Student Active Based On Education')
@@ -176,47 +260,42 @@ class SummaryResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $filterService = app(FilterService::class);
+
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('month')
-                    ->searchable(),
+                    ->searchable(isIndividual: true)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('year')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('registration_fee')
-                    ->numeric()
+                    ->searchable(isIndividual: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('course_fee')
-                    ->numeric()
+                Tables\Columns\ToggleColumn::make('status')
+                    ->label(__('Is Approved?'))
+                    ->tooltip(
+                        __('Only user with :roles roles can approved the summary', [
+                            'roles' => implode(', ', config('permission.approver_roles'))
+                        ])
+                    )
+                    ->disabled(!auth()->user()->isApprover)
+                    ->afterStateUpdated(function ($record, $state) {
+                        $userId = auth()->user()->id;
+
+                        if ($state) {
+                            $record->approver_id = $userId;
+                        } else {
+                            $record->approver_id = null;
+                        }
+
+                        $record->save();
+                    })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_fee')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('royalty')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('student_active')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('student_new')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('student_out')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('student_leave')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('branch_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('approver_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('author.name')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('approver.name')
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -227,10 +306,23 @@ class SummaryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                $filterService->filterByBranch(),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->extraModalFooterActions([
+                        Html2MediaAction::make('print')
+                            ->filename('summary-export')
+                            ->pagebreak('section', ['css', 'legacy'])
+                            ->margin([10, 10, 10, 10])
+                            ->preview()
+                            ->savePdf()
+                            ->content(fn (Summary $record) => view('pdf.summary', ['record' => $record]))
+                            ->icon('heroicon-m-printer')
+                            ->hidden(fn (Summary $record): bool => !$record->isApproved),
+                    ]),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -253,5 +345,15 @@ class SummaryResource extends Resource
             'create' => Pages\CreateSummary::route('/create'),
             'edit' => Pages\EditSummary::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::pending()->count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return __('The number of pending summaries');
     }
 }

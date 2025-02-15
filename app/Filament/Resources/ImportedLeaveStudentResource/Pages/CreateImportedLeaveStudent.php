@@ -59,13 +59,15 @@ class CreateImportedLeaveStudent extends CreateRecord
 
     private function isImportedLeaveStudentExists(): bool
     {
+        $importService = app(ImportService::class);
+
         $data = $this->data;
 
         $month = $data['month'];
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedLeaveStudentExists = app(ImportService::class)->isImportedLeaveStudentExists(
+        $isImportedLeaveStudentExists = $importService->isImportedLeaveStudentExists(
             $month,
             $year,
             $branchId,
@@ -75,12 +77,7 @@ class CreateImportedLeaveStudent extends CreateRecord
             $isImportedLeaveStudentExists
             && !$this->isNotificationSended
         ) {
-            Notification::make()
-                ->title(__('This imported data already exists!'))
-                ->body(__('Please use a different branch, month, or year.'))
-                ->danger()
-                ->duration(5000)
-                ->send();
+            $importService->sendNotificationDataExists();
 
             $this->isNotificationSended = true;
         }

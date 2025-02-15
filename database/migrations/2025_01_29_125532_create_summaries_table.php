@@ -20,10 +20,10 @@ return new class extends Migration
             $table->double('course_fee')->default(0);
             $table->double('total_fee')->default(0);
             $table->double('royalty')->default(0);
-            $table->integer('student_active')->default(0);
-            $table->integer('student_new')->default(0);
-            $table->integer('student_out')->default(0);
-            $table->integer('student_leave')->default(0);
+            $table->integer('active_student')->default(0);
+            $table->integer('new_student')->default(0);
+            $table->integer('inactive_student')->default(0);
+            $table->integer('leave_student')->default(0);
             $table->boolean('status')->default(false);
             $table->foreignId('branch_id')
                 ->constrained()

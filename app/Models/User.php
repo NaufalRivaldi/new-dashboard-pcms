@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Branch::class, 'ownerships');
     }
+
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->hasRole(config('permission.admin_roles'));
+    }
+
+    public function getIsApproverAttribute(): bool
+    {
+        return $this->hasRole(config('permission.approver_roles'));
+    }
 }

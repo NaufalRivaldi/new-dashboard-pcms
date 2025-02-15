@@ -15,6 +15,10 @@ class ImportedNewStudent extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'total' => 'integer',
+    ];
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

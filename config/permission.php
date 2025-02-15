@@ -183,4 +183,15 @@ return [
 
         'store' => 'default',
     ],
+
+    'admin_roles' => [
+        'Super Admin',
+        'Admin',
+    ],
+
+    'approver_roles' => [
+        'Super Admin',
+        'Admin',
+        'Approver',
+    ],
 ];
