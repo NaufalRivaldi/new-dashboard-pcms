@@ -123,7 +123,8 @@ class ImportedFeeResource extends Resource
                 Tables\Columns\TextColumn::make('branch.name')
                     ->searchable(isIndividual:true),
                 Tables\Columns\TextColumn::make('month')
-                    ->searchable(isIndividual:true)
+                    ->formatStateUsing(fn (string $state): string => Month::name($state))
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('year')
                     ->sortable()
@@ -147,6 +148,7 @@ class ImportedFeeResource extends Resource
             ])
             ->filters([
                 $filterService->filterByBranch(),
+                $filterService->filterByMonth(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

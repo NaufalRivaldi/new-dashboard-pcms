@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\Month;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -22,5 +23,13 @@ class FilterService
             )
             ->searchable()
             ->preload();
+    }
+
+    public function filterByMonth(bool $isMultiple = true)
+    {
+        return SelectFilter::make('month')
+            ->options(Month::class)
+            ->multiple($isMultiple)
+            ->searchable();
     }
 }

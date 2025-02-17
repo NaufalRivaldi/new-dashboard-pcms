@@ -16,6 +16,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -258,7 +259,8 @@ class SummaryResource extends Resource
                 Tables\Columns\TextColumn::make('branch.name')
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('month')
-                    ->searchable(isIndividual: true)
+                    ->formatStateUsing(fn (string $state): string => Month::name($state))
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('year')
                     ->searchable(isIndividual: true)
@@ -298,6 +300,10 @@ class SummaryResource extends Resource
             ])
             ->filters([
                 $filterService->filterByBranch(),
+                $filterService->filterByMonth(),
+                Filter::make('status')
+                    ->label(__('Is Pending?'))
+                    ->query(fn (Builder $query): Builder => $query->pending()),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
