@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Enums\Month;
 use App\Enums\PaymentType;
-use App\Filament\Imports\ImportedFeeImporter;
 use App\Filament\Resources\ImportedFeeResource\Pages;
 use App\Filament\Resources\ImportedFeeResource\RelationManagers;
 use App\Models\ImportedFee;
@@ -15,12 +14,9 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ImportAction;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\Rules\File;
 
 class ImportedFeeResource extends Resource
 {
@@ -169,16 +165,6 @@ class ImportedFeeResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->headerActions([
-                ImportAction::make()
-                    ->importer(ImportedFeeImporter::class)
-                    ->label(__('Import Data'))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->csvDelimiter(';')
-                    ->fileRules([
-                        File::types(['csv', 'txt'])->max((1024*2)),
-                    ]),
             ]);
     }
 
