@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SummaryResource\Pages;
 
 use App\Filament\Resources\SummaryResource;
+use App\Models\Summary;
 use App\Services\ImportService;
 use App\Services\NotificationService;
 use Filament\Actions;
@@ -30,7 +31,8 @@ class CreateSummary extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isSummaryExists = app(ImportService::class)->isSummaryExists(
+        $isSummaryExists = app(ImportService::class)->isImportedDataExists(
+            Summary::class,
             $month,
             $year,
             $branchId,
@@ -65,7 +67,8 @@ class CreateSummary extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isSummaryExists = app(ImportService::class)->isSummaryExists(
+        $isSummaryExists = app(ImportService::class)->isImportedDataExists(
+            Summary::class,
             $month,
             $year,
             $branchId,

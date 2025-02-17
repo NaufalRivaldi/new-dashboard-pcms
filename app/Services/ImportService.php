@@ -2,92 +2,30 @@
 
 namespace App\Services;
 
+use App\Enums\Month;
 use App\Enums\PaymentType;
-use App\Models\Branch;
 use App\Models\ImportedActiveStudent;
 use App\Models\ImportedActiveStudentEducation;
 use App\Models\ImportedFee;
 use App\Models\ImportedInactiveStudent;
 use App\Models\ImportedLeaveStudent;
 use App\Models\ImportedNewStudent;
-use App\Models\Summary;
+use EightyNine\ExcelImport\ExcelImportAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class ImportService
 {
-    public function isImportedFeeExists(
+    public function isImportedDataExists(
+        string $modelName,
         ?int $month = null,
         ?int $year = null,
         ?int $branchId = null,
     ): bool {
-        return ImportedFee::where('month', $month)
-            ->where('year', $year)
-            ->where('branch_id', $branchId)
-            ->exists();
-    }
-
-    public function isImportedActiveStudentExists(
-        ?int $month = null,
-        ?int $year = null,
-        ?int $branchId = null,
-    ): bool {
-        return ImportedActiveStudent::where('month', $month)
-            ->where('year', $year)
-            ->where('branch_id', $branchId)
-            ->exists();
-    }
-
-    public function isImportedActiveStudentEducationExists(
-        ?int $month = null,
-        ?int $year = null,
-        ?int $branchId = null,
-    ): bool {
-        return ImportedActiveStudentEducation::where('month', $month)
-            ->where('year', $year)
-            ->where('branch_id', $branchId)
-            ->exists();
-    }
-
-    public function isImportedNewStudentExists(
-        ?int $month = null,
-        ?int $year = null,
-        ?int $branchId = null,
-    ): bool {
-        return ImportedNewStudent::where('month', $month)
-            ->where('year', $year)
-            ->where('branch_id', $branchId)
-            ->exists();
-    }
-
-    public function isImportedInactiveStudentExists(
-        ?int $month = null,
-        ?int $year = null,
-        ?int $branchId = null,
-    ): bool {
-        return ImportedInactiveStudent::where('month', $month)
-            ->where('year', $year)
-            ->where('branch_id', $branchId)
-            ->exists();
-    }
-
-    public function isImportedLeaveStudentExists(
-        ?int $month = null,
-        ?int $year = null,
-        ?int $branchId = null,
-    ): bool {
-        return ImportedLeaveStudent::where('month', $month)
-            ->where('year', $year)
-            ->where('branch_id', $branchId)
-            ->exists();
-    }
-
-    public function isSummaryExists(
-        ?int $month = null,
-        ?int $year = null,
-        ?int $branchId = null,
-    ): bool {
-        return Summary::where('month', $month)
+        return $modelName::where('month', $month)
             ->where('year', $year)
             ->where('branch_id', $branchId)
             ->exists();
@@ -208,7 +146,7 @@ class ImportService
             'active_student' => $importedActiveStudent->total,
             'new_student' => $importedNewStudent->total,
             'inactive_student' => $importedInactiveStudent->total,
-            'leave_student' => $importedActiveStudent->total,
+            'leave_student' => $importedLeaveStudent->total,
             'summary_active_student_education' => $importedActiveStudentEducation
                 ->details
                 ->map(function ($details) {
@@ -270,5 +208,41 @@ class ImportService
             'registration' => $registrationFee,
             'course' => $courseFee,
         ];
+    }
+
+    public function importAction(string $importModel)
+    {
+        return ExcelImportAction::make()
+            ->color("primary")
+            ->processCollectionUsing(function (string $modelClass, Collection $collection) {
+                $collection
+                    ->map(function ($data) {
+                        return $data->values();
+                    });
+
+                return $collection;
+            })
+            ->use($importModel)
+            ->beforeUploadField([
+                app(FormService::class)->branchSelectOption(),
+                Select::make('month')
+                    ->options(Month::class)
+                    ->searchable()
+                    ->required(),
+                TextInput::make('year')
+                    ->required()
+                    ->numeric()
+                    ->minValue(2000)
+                    ->maxValue(2030),
+            ])
+            ->beforeImport(function (array $data, $livewire, $excelImportAction) {
+                $customData = [
+                    'branch_id' => (int) $data['branch_id'],
+                    'month' => (int) $data['month'],
+                    'year' => (int) $data['year'],
+                ];
+
+                $excelImportAction->customImportData($customData);
+            });
     }
 }

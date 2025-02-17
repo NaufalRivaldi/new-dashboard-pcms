@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ImportedFeeResource\Pages;
 
 use App\Filament\Resources\ImportedFeeResource;
+use App\Models\ImportedFee;
 use App\Services\ImportService;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -30,7 +31,8 @@ class CreateImportedFee extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedFeeExists = app(ImportService::class)->isImportedFeeExists(
+        $isImportedFeeExists = app(ImportService::class)->isImportedDataExists(
+            ImportedFee::class,
             $month,
             $year,
             $branchId,
@@ -67,7 +69,8 @@ class CreateImportedFee extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedFeeExists = $importService->isImportedFeeExists(
+        $isImportedFeeExists = $importService->isImportedDataExists(
+            ImportedFee::class,
             $month,
             $year,
             $branchId,

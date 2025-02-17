@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ImportedActiveStudentResource\Pages;
 
 use App\Filament\Resources\ImportedActiveStudentResource;
+use App\Models\ImportedActiveStudent;
 use App\Services\ImportService;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -30,7 +31,8 @@ class CreateImportedActiveStudent extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedActiveStudentExists = app(ImportService::class)->isImportedActiveStudentExists(
+        $isImportedActiveStudentExists = app(ImportService::class)->isImportedDataExists(
+            ImportedActiveStudent::class,
             $month,
             $year,
             $branchId,
@@ -67,7 +69,8 @@ class CreateImportedActiveStudent extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedActiveStudentExists = $importService->isImportedActiveStudentExists(
+        $isImportedActiveStudentExists = $importService->isImportedDataExists(
+            ImportedActiveStudent::class,
             $month,
             $year,
             $branchId,

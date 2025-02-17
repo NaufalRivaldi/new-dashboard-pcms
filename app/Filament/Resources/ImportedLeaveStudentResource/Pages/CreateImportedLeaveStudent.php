@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ImportedLeaveStudentResource\Pages;
 
 use App\Filament\Resources\ImportedLeaveStudentResource;
+use App\Models\ImportedLeaveStudent;
 use App\Services\ImportService;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -30,7 +31,8 @@ class CreateImportedLeaveStudent extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedLeaveStudentExists = app(ImportService::class)->isImportedLeaveStudentExists(
+        $isImportedLeaveStudentExists = app(ImportService::class)->isImportedDataExists(
+            ImportedLeaveStudent::class,
             $month,
             $year,
             $branchId,
@@ -67,7 +69,8 @@ class CreateImportedLeaveStudent extends CreateRecord
         $year = $data['year'];
         $branchId = $data['branch_id'];
 
-        $isImportedLeaveStudentExists = $importService->isImportedLeaveStudentExists(
+        $isImportedLeaveStudentExists = $importService->isImportedDataExists(
+            ImportedLeaveStudent::class,
             $month,
             $year,
             $branchId,

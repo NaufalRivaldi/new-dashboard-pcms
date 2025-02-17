@@ -7,6 +7,7 @@ use App\Filament\Resources\ImportedInactiveStudentResource\Pages;
 use App\Filament\Resources\ImportedInactiveStudentResource\RelationManagers;
 use App\Models\ImportedInactiveStudent;
 use App\Services\FilterService;
+use App\Services\FormService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -34,18 +35,8 @@ class ImportedInactiveStudentResource extends resource
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\Grid::make(1)->schema([
                         Forms\Components\Section::make()->schema([
-                            Forms\Components\Select::make('branch_id')
-                                ->label(__('Branch'))
-                                ->relationship(
-                                    name: 'branch',
-                                    titleAttribute: 'name',
-                                    modifyQueryUsing: function (Builder $query) {
-                                        return $query
-                                            ->select('id', 'name');
-                                    }
-                                )
-                                ->searchable()
-                                ->preload()
+                            app(FormService::class)
+                                ->branchSelectOption()
                                 ->disabledOn('edit')
                                 ->live(onBlur: true),
                         ]),

@@ -7,6 +7,7 @@ use App\Filament\Resources\SummaryResource\Pages;
 use App\Filament\Resources\SummaryResource\RelationManagers;
 use App\Models\Summary;
 use App\Services\FilterService;
+use App\Services\FormService;
 use App\Services\ImportService;
 use App\Services\NotificationService;
 use Filament\Forms;
@@ -37,18 +38,8 @@ class SummaryResource extends Resource
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\Grid::make(1)->schema([
                         Forms\Components\Section::make()->schema([
-                            Forms\Components\Select::make('branch_id')
-                                ->label(__('Branch'))
-                                ->relationship(
-                                    name: 'branch',
-                                    titleAttribute: 'name',
-                                    modifyQueryUsing: function (Builder $query) {
-                                        return $query
-                                            ->select('id', 'name');
-                                    }
-                                )
-                                ->searchable()
-                                ->preload()
+                            app(FormService::class)
+                                ->branchSelectOption()
                                 ->disabledOn('edit')
                                 ->live(onBlur: true),
                             Forms\Components\Toggle::make('status')

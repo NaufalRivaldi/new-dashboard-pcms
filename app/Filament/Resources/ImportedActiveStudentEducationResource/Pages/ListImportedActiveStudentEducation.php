@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\ImportedActiveStudentEducationResource\Pages;
 
 use App\Filament\Resources\ImportedActiveStudentEducationResource;
+use App\Imports\ActiveStudentEducationImport;
+use App\Services\ImportService;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -13,6 +15,7 @@ class ListImportedActiveStudentEducation extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            app(ImportService::class)->importAction(ActiveStudentEducationImport::class),
             Actions\CreateAction::make(),
         ];
     }
