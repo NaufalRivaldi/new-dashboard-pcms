@@ -17,4 +17,9 @@ class SummaryActiveStudentLesson extends Model
     {
         return $this->belongsTo(Lesson::class);
     }
+
+    public function summary(): BelongsTo
+    {
+        return $this->belongsTo(Summary::class);
+    }
 }

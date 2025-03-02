@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Month;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,5 +67,10 @@ class Summary extends Model
     public function getIsApprovedAttribute(): bool
     {
         return $this->status == true;
+    }
+
+    public function getPeriodAttribute(): string
+    {
+        return Month::name($this->month) . " {$this->year}";
     }
 }

@@ -60,6 +60,7 @@ class AdminPanelProvider extends PanelProvider
                 'Locations',
                 'Masters',
                 'Imports',
+                'Data Analysis',
                 'Roles and Permissions',
                 'Settings',
             ]);
