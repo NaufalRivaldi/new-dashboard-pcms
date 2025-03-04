@@ -20,6 +20,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use Torgodly\Html2Media\Tables\Actions\Html2MediaAction;
 
 class SummaryResource extends Resource
@@ -269,7 +270,12 @@ class SummaryResource extends Resource
                     ->label(__('Is Approved?'))
                     ->tooltip(
                         __('Only user with :roles roles can approved the summary', [
-                            'roles' => implode(', ', config('permission.approver_roles'))
+                            'roles' => implode(
+                                ', ',
+                                collect(config('permission.approver_roles'))
+                                    ->map(fn ($role) => Str::of($role)->replace('_', ' ')->title())
+                                    ->all()
+                            )
                         ])
                     )
                     ->disabled(!auth()->user()->isApprover)

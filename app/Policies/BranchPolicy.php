@@ -2,18 +2,20 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\Branch;
 use App\Models\User;
+use App\Models\Branch;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class BranchPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any Branch');
+        return $user->can('view_any_report::branch::not::imported::data');
     }
 
     /**
@@ -21,7 +23,7 @@ class BranchPolicy
      */
     public function view(User $user, Branch $branch): bool
     {
-        return $user->checkPermissionTo('view Branch');
+        return $user->can('view_report::branch::not::imported::data');
     }
 
     /**
@@ -29,7 +31,7 @@ class BranchPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create Branch');
+        return $user->can('create_report::branch::not::imported::data');
     }
 
     /**
@@ -37,7 +39,7 @@ class BranchPolicy
      */
     public function update(User $user, Branch $branch): bool
     {
-        return $user->checkPermissionTo('update Branch');
+        return $user->can('update_report::branch::not::imported::data');
     }
 
     /**
@@ -45,62 +47,62 @@ class BranchPolicy
      */
     public function delete(User $user, Branch $branch): bool
     {
-        return $user->checkPermissionTo('delete Branch');
+        return $user->can('delete_report::branch::not::imported::data');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any Branch');
+        return $user->can('delete_any_report::branch::not::imported::data');
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Branch $branch): bool
-    {
-        return $user->checkPermissionTo('restore Branch');
-    }
-
-    /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any Branch');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, Branch $branch): bool
-    {
-        return $user->checkPermissionTo('replicate Branch');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder Branch');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, Branch $branch): bool
     {
-        return $user->checkPermissionTo('force-delete Branch');
+        return $user->can('force_delete_report::branch::not::imported::data');
     }
 
     /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any Branch');
+        return $user->can('force_delete_any_report::branch::not::imported::data');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Branch $branch): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, Branch $branch): bool
+    {
+        return $user->can('replicate_report::branch::not::imported::data');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_report::branch::not::imported::data');
     }
 }

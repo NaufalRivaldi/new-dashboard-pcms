@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Branch;
 use App\Models\Region;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,7 +13,7 @@ use Filament\Pages\Page;
 
 class Compare extends Page
 {
-    use HasFiltersForm;
+    use HasFiltersForm, HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 

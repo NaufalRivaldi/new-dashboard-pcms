@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use Althinect\FilamentSpatieRolesPermissions\Concerns\HasSuperAdmin;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasSuperAdmin;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -55,13 +55,24 @@ class User extends Authenticatable
         return $this->belongsToMany(Branch::class, 'ownerships');
     }
 
-    public function getIsAdminAttribute(): bool
+    public function isSuperAdmin(): Attribute
     {
-        return $this->hasRole(config('permission.admin_roles'));
+        return Attribute::make(
+            get: fn (): bool => $this->hasRole(config('permission.super_admin_roles')),
+        );
     }
 
-    public function getIsApproverAttribute(): bool
+    public function isAdmin(): Attribute
     {
-        return $this->hasRole(config('permission.approver_roles'));
+        return Attribute::make(
+            get: fn (): bool => $this->hasRole(config('permission.admin_roles')),
+        );
+    }
+
+    public function isApprover(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): bool => $this->hasRole(config('permission.approver_roles')),
+        );
     }
 }

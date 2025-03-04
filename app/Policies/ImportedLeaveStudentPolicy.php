@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\ImportedLeaveStudent;
 use App\Models\User;
+use App\Models\ImportedLeaveStudent;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImportedLeaveStudentPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any ImportedLeaveStudent');
+        return $user->can('view_any_imported::leave::student');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, ImportedLeaveStudent $importedleavestudent): bool
+    public function view(User $user, ImportedLeaveStudent $importedLeaveStudent): bool
     {
-        return $user->checkPermissionTo('view ImportedLeaveStudent');
+        return $user->can('view_imported::leave::student');
     }
 
     /**
@@ -29,78 +31,78 @@ class ImportedLeaveStudentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create ImportedLeaveStudent');
+        return $user->can('create_imported::leave::student');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, ImportedLeaveStudent $importedleavestudent): bool
+    public function update(User $user, ImportedLeaveStudent $importedLeaveStudent): bool
     {
-        return $user->checkPermissionTo('update ImportedLeaveStudent');
+        return $user->can('update_imported::leave::student');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ImportedLeaveStudent $importedleavestudent): bool
+    public function delete(User $user, ImportedLeaveStudent $importedLeaveStudent): bool
     {
-        return $user->checkPermissionTo('delete ImportedLeaveStudent');
+        return $user->can('delete_imported::leave::student');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any ImportedLeaveStudent');
+        return $user->can('delete_any_imported::leave::student');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, ImportedLeaveStudent $importedleavestudent): bool
+    public function forceDelete(User $user, ImportedLeaveStudent $importedLeaveStudent): bool
     {
-        return $user->checkPermissionTo('restore ImportedLeaveStudent');
+        return $user->can('force_delete_imported::leave::student');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any ImportedLeaveStudent');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, ImportedLeaveStudent $importedleavestudent): bool
-    {
-        return $user->checkPermissionTo('replicate ImportedLeaveStudent');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder ImportedLeaveStudent');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, ImportedLeaveStudent $importedleavestudent): bool
-    {
-        return $user->checkPermissionTo('force-delete ImportedLeaveStudent');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any ImportedLeaveStudent');
+        return $user->can('force_delete_any_imported::leave::student');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, ImportedLeaveStudent $importedLeaveStudent): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, ImportedLeaveStudent $importedLeaveStudent): bool
+    {
+        return $user->can('replicate_imported::leave::student');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_imported::leave::student');
     }
 }

@@ -2,18 +2,20 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\Lesson;
 use App\Models\User;
+use App\Models\Lesson;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LessonPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any Lesson');
+        return $user->can('view_any_lesson');
     }
 
     /**
@@ -21,7 +23,7 @@ class LessonPolicy
      */
     public function view(User $user, Lesson $lesson): bool
     {
-        return $user->checkPermissionTo('view Lesson');
+        return $user->can('view_lesson');
     }
 
     /**
@@ -29,7 +31,7 @@ class LessonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create Lesson');
+        return $user->can('create_lesson');
     }
 
     /**
@@ -37,7 +39,7 @@ class LessonPolicy
      */
     public function update(User $user, Lesson $lesson): bool
     {
-        return $user->checkPermissionTo('update Lesson');
+        return $user->can('update_lesson');
     }
 
     /**
@@ -45,62 +47,62 @@ class LessonPolicy
      */
     public function delete(User $user, Lesson $lesson): bool
     {
-        return $user->checkPermissionTo('delete Lesson');
+        return $user->can('delete_lesson');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any Lesson');
+        return $user->can('delete_any_lesson');
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Lesson $lesson): bool
-    {
-        return $user->checkPermissionTo('restore Lesson');
-    }
-
-    /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any Lesson');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, Lesson $lesson): bool
-    {
-        return $user->checkPermissionTo('replicate Lesson');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder Lesson');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, Lesson $lesson): bool
     {
-        return $user->checkPermissionTo('force-delete Lesson');
+        return $user->can('force_delete_lesson');
     }
 
     /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any Lesson');
+        return $user->can('force_delete_any_lesson');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Lesson $lesson): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, Lesson $lesson): bool
+    {
+        return $user->can('replicate_lesson');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_lesson');
     }
 }

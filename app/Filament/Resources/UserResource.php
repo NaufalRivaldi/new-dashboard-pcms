@@ -40,6 +40,8 @@ class UserResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Select::make('roles')
                             ->relationship('roles', 'name')
+                            ->preload()
+                            ->searchable(),
                     ])
                     ->columns(2),
                 Section::make('Auth')
@@ -72,6 +74,11 @@ class UserResource extends Resource
                 Tables\Columns\ViewColumn::make('branches')
                     ->view('filament.tables.columns.user-branches')
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                if (!auth()->user()->isSuperAdmin) {
+                    return $query->withoutRole('super_admin');
+                }
+            })
             ->filters([
                 SelectFilter::make('roles')
                     ->multiple()
@@ -106,6 +113,10 @@ class UserResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
+        if (!auth()->user()->isSuperAdmin) {
+            return static::getModel()::withoutRole('super_admin')->count();
+        }
+
         return static::getModel()::count();
     }
 

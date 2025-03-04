@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
@@ -10,7 +11,7 @@ use Illuminate\Support\Carbon;
 
 class TopOrUnderFive extends Page
 {
-    use HasFiltersForm;
+    use HasFiltersForm, HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 

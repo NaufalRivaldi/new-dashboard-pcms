@@ -2,18 +2,20 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\Region;
 use App\Models\User;
+use App\Models\Region;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class RegionPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any Region');
+        return $user->can('view_any_region');
     }
 
     /**
@@ -21,7 +23,7 @@ class RegionPolicy
      */
     public function view(User $user, Region $region): bool
     {
-        return $user->checkPermissionTo('view Region');
+        return $user->can('view_region');
     }
 
     /**
@@ -29,7 +31,7 @@ class RegionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create Region');
+        return $user->can('create_region');
     }
 
     /**
@@ -37,7 +39,7 @@ class RegionPolicy
      */
     public function update(User $user, Region $region): bool
     {
-        return $user->checkPermissionTo('update Region');
+        return $user->can('update_region');
     }
 
     /**
@@ -45,62 +47,62 @@ class RegionPolicy
      */
     public function delete(User $user, Region $region): bool
     {
-        return $user->checkPermissionTo('delete Region');
+        return $user->can('delete_region');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any Region');
+        return $user->can('delete_any_region');
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Region $region): bool
-    {
-        return $user->checkPermissionTo('restore Region');
-    }
-
-    /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any Region');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, Region $region): bool
-    {
-        return $user->checkPermissionTo('replicate Region');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder Region');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, Region $region): bool
     {
-        return $user->checkPermissionTo('force-delete Region');
+        return $user->can('force_delete_region');
     }
 
     /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any Region');
+        return $user->can('force_delete_any_region');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Region $region): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, Region $region): bool
+    {
+        return $user->can('replicate_region');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_region');
     }
 }

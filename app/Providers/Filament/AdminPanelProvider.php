@@ -55,15 +55,32 @@ class AdminPanelProvider extends PanelProvider
             ->resources([
                 config('filament-logger.activity_resource')
             ])
-            ->plugin(FilamentSpatieRolesPermissionsPlugin::make())
             ->navigationGroups([
                 'Locations',
                 'Masters',
-                'Roles and Permissions',
+                'Access Control',
                 'Imports',
                 'Data Analysis',
                 'Reports',
                 'Settings',
+            ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                    ->gridColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                        'lg' => 3
+                    ])
+                    ->sectionColumnSpan(1)
+                    ->checkboxListColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                        'lg' => 4,
+                    ])
+                    ->resourceCheckboxListColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                    ]),
             ]);
     }
 }

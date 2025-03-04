@@ -2,18 +2,20 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\Education;
 use App\Models\User;
+use App\Models\Education;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EducationPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any Education');
+        return $user->can('view_any_education');
     }
 
     /**
@@ -21,7 +23,7 @@ class EducationPolicy
      */
     public function view(User $user, Education $education): bool
     {
-        return $user->checkPermissionTo('view Education');
+        return $user->can('view_education');
     }
 
     /**
@@ -29,7 +31,7 @@ class EducationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create Education');
+        return $user->can('create_education');
     }
 
     /**
@@ -37,7 +39,7 @@ class EducationPolicy
      */
     public function update(User $user, Education $education): bool
     {
-        return $user->checkPermissionTo('update Education');
+        return $user->can('update_education');
     }
 
     /**
@@ -45,62 +47,62 @@ class EducationPolicy
      */
     public function delete(User $user, Education $education): bool
     {
-        return $user->checkPermissionTo('delete Education');
+        return $user->can('delete_education');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any Education');
+        return $user->can('delete_any_education');
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Education $education): bool
-    {
-        return $user->checkPermissionTo('restore Education');
-    }
-
-    /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any Education');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, Education $education): bool
-    {
-        return $user->checkPermissionTo('replicate Education');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder Education');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, Education $education): bool
     {
-        return $user->checkPermissionTo('force-delete Education');
+        return $user->can('force_delete_education');
     }
 
     /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any Education');
+        return $user->can('force_delete_any_education');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Education $education): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, Education $education): bool
+    {
+        return $user->can('replicate_education');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_education');
     }
 }

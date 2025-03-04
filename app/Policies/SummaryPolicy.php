@@ -2,18 +2,20 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\Summary;
 use App\Models\User;
+use App\Models\Summary;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SummaryPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any Summary');
+        return $user->can('view_any_summary');
     }
 
     /**
@@ -21,7 +23,7 @@ class SummaryPolicy
      */
     public function view(User $user, Summary $summary): bool
     {
-        return $user->checkPermissionTo('view Summary');
+        return $user->can('view_summary');
     }
 
     /**
@@ -29,7 +31,7 @@ class SummaryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create Summary');
+        return $user->can('create_summary');
     }
 
     /**
@@ -37,7 +39,7 @@ class SummaryPolicy
      */
     public function update(User $user, Summary $summary): bool
     {
-        return $user->checkPermissionTo('update Summary');
+        return $user->can('update_summary');
     }
 
     /**
@@ -45,62 +47,62 @@ class SummaryPolicy
      */
     public function delete(User $user, Summary $summary): bool
     {
-        return $user->checkPermissionTo('delete Summary');
+        return $user->can('delete_summary');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any Summary');
+        return $user->can('delete_any_summary');
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Summary $summary): bool
-    {
-        return $user->checkPermissionTo('restore Summary');
-    }
-
-    /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any Summary');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, Summary $summary): bool
-    {
-        return $user->checkPermissionTo('replicate Summary');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder Summary');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, Summary $summary): bool
     {
-        return $user->checkPermissionTo('force-delete Summary');
+        return $user->can('force_delete_summary');
     }
 
     /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any Summary');
+        return $user->can('force_delete_any_summary');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Summary $summary): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, Summary $summary): bool
+    {
+        return $user->can('replicate_summary');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_summary');
     }
 }

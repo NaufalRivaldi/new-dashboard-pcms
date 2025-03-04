@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\ImportedActiveStudentEducation;
 use App\Models\User;
+use App\Models\ImportedActiveStudentEducation;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImportedActiveStudentEducationPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any ImportedActiveStudentEducation');
+        return $user->can('view_any_imported::active::student::education');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, ImportedActiveStudentEducation $importedactivestudenteducation): bool
+    public function view(User $user, ImportedActiveStudentEducation $importedActiveStudentEducation): bool
     {
-        return $user->checkPermissionTo('view ImportedActiveStudentEducation');
+        return $user->can('view_imported::active::student::education');
     }
 
     /**
@@ -29,78 +31,78 @@ class ImportedActiveStudentEducationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create ImportedActiveStudentEducation');
+        return $user->can('create_imported::active::student::education');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, ImportedActiveStudentEducation $importedactivestudenteducation): bool
+    public function update(User $user, ImportedActiveStudentEducation $importedActiveStudentEducation): bool
     {
-        return $user->checkPermissionTo('update ImportedActiveStudentEducation');
+        return $user->can('update_imported::active::student::education');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ImportedActiveStudentEducation $importedactivestudenteducation): bool
+    public function delete(User $user, ImportedActiveStudentEducation $importedActiveStudentEducation): bool
     {
-        return $user->checkPermissionTo('delete ImportedActiveStudentEducation');
+        return $user->can('delete_imported::active::student::education');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any ImportedActiveStudentEducation');
+        return $user->can('delete_any_imported::active::student::education');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, ImportedActiveStudentEducation $importedactivestudenteducation): bool
+    public function forceDelete(User $user, ImportedActiveStudentEducation $importedActiveStudentEducation): bool
     {
-        return $user->checkPermissionTo('restore ImportedActiveStudentEducation');
+        return $user->can('force_delete_imported::active::student::education');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any ImportedActiveStudentEducation');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, ImportedActiveStudentEducation $importedactivestudenteducation): bool
-    {
-        return $user->checkPermissionTo('replicate ImportedActiveStudentEducation');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder ImportedActiveStudentEducation');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, ImportedActiveStudentEducation $importedactivestudenteducation): bool
-    {
-        return $user->checkPermissionTo('force-delete ImportedActiveStudentEducation');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any ImportedActiveStudentEducation');
+        return $user->can('force_delete_any_imported::active::student::education');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, ImportedActiveStudentEducation $importedActiveStudentEducation): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, ImportedActiveStudentEducation $importedActiveStudentEducation): bool
+    {
+        return $user->can('replicate_imported::active::student::education');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_imported::active::student::education');
     }
 }

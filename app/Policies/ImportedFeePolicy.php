@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\ImportedFee;
 use App\Models\User;
+use App\Models\ImportedFee;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImportedFeePolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any ImportedFee');
+        return $user->can('view_any_imported::fee');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, ImportedFee $importedfee): bool
+    public function view(User $user, ImportedFee $importedFee): bool
     {
-        return $user->checkPermissionTo('view ImportedFee');
+        return $user->can('view_imported::fee');
     }
 
     /**
@@ -29,78 +31,78 @@ class ImportedFeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create ImportedFee');
+        return $user->can('create_imported::fee');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, ImportedFee $importedfee): bool
+    public function update(User $user, ImportedFee $importedFee): bool
     {
-        return $user->checkPermissionTo('update ImportedFee');
+        return $user->can('update_imported::fee');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ImportedFee $importedfee): bool
+    public function delete(User $user, ImportedFee $importedFee): bool
     {
-        return $user->checkPermissionTo('delete ImportedFee');
+        return $user->can('delete_imported::fee');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any ImportedFee');
+        return $user->can('delete_any_imported::fee');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, ImportedFee $importedfee): bool
+    public function forceDelete(User $user, ImportedFee $importedFee): bool
     {
-        return $user->checkPermissionTo('restore ImportedFee');
+        return $user->can('force_delete_imported::fee');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any ImportedFee');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, ImportedFee $importedfee): bool
-    {
-        return $user->checkPermissionTo('replicate ImportedFee');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder ImportedFee');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, ImportedFee $importedfee): bool
-    {
-        return $user->checkPermissionTo('force-delete ImportedFee');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any ImportedFee');
+        return $user->can('force_delete_any_imported::fee');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, ImportedFee $importedFee): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, ImportedFee $importedFee): bool
+    {
+        return $user->can('replicate_imported::fee');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_imported::fee');
     }
 }
