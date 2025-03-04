@@ -648,6 +648,295 @@ class AnalysisService
         ];
     }
 
+    public function getTopUnderFiveFilters(): array
+    {
+        $previousUrl = url()->previous();
+        $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
+        parse_str($queryParams, $params);
+
+        $period = collect(explode('-', Arr::get($params, 'filters.period', Carbon::now()->format('Y-m'))))
+            ->map(fn ($value): int => (int) $value);
+
+        $periodValues = [];
+        $periodValues['year'] = $period[0];
+        $periodValues['month'] = $period[1];
+
+        return [
+            'periodValues' => $periodValues,
+            'type' => Arr::get($params, 'filters.type', 'top'),
+        ];
+    }
+
+    private function getTopFiveSummaryBuilder(): Builder
+    {
+        $filters = $this->getTopUnderFiveFilters();
+
+        return Summary::where('year', $filters['periodValues']['year'])
+            ->where('month', $filters['periodValues']['month'])
+            ->groupBy('year', 'month', 'branch_id');
+    }
+
+    public function getTopFiveFeeRecords(): Collection
+    {
+        $filters = $this->getTopUnderFiveFilters();
+
+        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+
+        $summaries = $this->getTopFiveSummaryBuilder()
+            ->selectRaw('year, month, SUM(registration_fee) as total_registration_fee, SUM(course_fee) as total_course_fee, SUM(total_fee) as total_total_fee, branch_id')
+            ->orderBy('total_total_fee', $order)
+            ->get();
+
+        $branchIds = [
+            Arr::get($summaries[0] ?? [], 'branch_id', 0),
+            Arr::get($summaries[1] ?? [], 'branch_id', 0),
+            Arr::get($summaries[2] ?? [], 'branch_id', 0),
+            Arr::get($summaries[3] ?? [], 'branch_id', 0),
+            Arr::get($summaries[4] ?? [], 'branch_id', 0),
+        ];
+
+        $results = collect();
+
+        foreach ($branchIds as $branchId) {
+            $findSummary = $summaries
+                ->where('year', $filters['periodValues']['year'])
+                ->where('month', $filters['periodValues']['month'])
+                ->where('branch_id', $branchId)
+                ->first();
+
+            $findSummary = $findSummary ? $findSummary->toArray() : [];
+
+            $results->push([
+                ...[
+                    'year' => $filters['periodValues']['year'],
+                    'month' => $filters['periodValues']['month'],
+                    'total_registration_fee' => 0,
+                    'total_course_fee' => 0,
+                    'total_total_fee' => 0,
+                    'branch_id' => (int) $branchId,
+                ],
+                ...$findSummary
+            ]);
+        }
+
+        return $results;
+    }
+
+    public function getTopFiveRoyaltyRecords(): Collection
+    {
+        $filters = $this->getTopUnderFiveFilters();
+
+        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+
+        $summaries = $this->getTopFiveSummaryBuilder()
+            ->selectRaw('year, month, SUM(royalty) as total_royalty, branch_id')
+            ->orderBy('total_royalty', $order)
+            ->get();
+
+        $branchIds = [
+            Arr::get($summaries[0] ?? [], 'branch_id', 0),
+            Arr::get($summaries[1] ?? [], 'branch_id', 0),
+            Arr::get($summaries[2] ?? [], 'branch_id', 0),
+            Arr::get($summaries[3] ?? [], 'branch_id', 0),
+            Arr::get($summaries[4] ?? [], 'branch_id', 0),
+        ];
+
+        $results = collect();
+
+        foreach ($branchIds as $branchId) {
+            $findSummary = $summaries
+                ->where('year', $filters['periodValues']['year'])
+                ->where('month', $filters['periodValues']['month'])
+                ->where('branch_id', $branchId)
+                ->first();
+
+            $findSummary = $findSummary ? $findSummary->toArray() : [];
+
+            $results->push([
+                ...[
+                    'year' => $filters['periodValues']['year'],
+                    'month' => $filters['periodValues']['month'],
+                    'total_royalty' => 0,
+                    'branch_id' => (int) $branchId,
+                ],
+                ...$findSummary
+            ]);
+        }
+
+        return $results;
+    }
+
+    public function getTopFiveStudentRecords(): Collection
+    {
+        $filters = $this->getTopUnderFiveFilters();
+
+        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+
+        $summaries = $this->getTopFiveSummaryBuilder()
+            ->selectRaw('year, month, SUM(active_student) as total_active_student, SUM(new_student) as total_new_student, SUM(inactive_student) as total_inactive_student, SUM(leave_student) as total_leave_student, branch_id')
+            ->orderBy('total_active_student', $order)
+            ->get();
+
+        $branchIds = [
+            Arr::get($summaries[0] ?? [], 'branch_id', 0),
+            Arr::get($summaries[1] ?? [], 'branch_id', 0),
+            Arr::get($summaries[2] ?? [], 'branch_id', 0),
+            Arr::get($summaries[3] ?? [], 'branch_id', 0),
+            Arr::get($summaries[4] ?? [], 'branch_id', 0),
+        ];
+
+        $results = collect();
+
+        foreach ($branchIds as $branchId) {
+            $findSummary = $summaries
+                ->where('year', $filters['periodValues']['year'])
+                ->where('month', $filters['periodValues']['month'])
+                ->where('branch_id', $branchId)
+                ->first();
+
+            $findSummary = $findSummary ? $findSummary->toArray() : [];
+
+            $results->push([
+                ...[
+                    'year' => $filters['periodValues']['year'],
+                    'month' => $filters['periodValues']['month'],
+                    'total_active_student' => 0,
+                    'total_new_student' => 0,
+                    'total_inactive_student' => 0,
+                    'total_leave_student' => 0,
+                    'branch_id' => (int) $branchId,
+                ],
+                ...$findSummary
+            ]);
+        }
+
+        return $results;
+    }
+
+    public function getTopFiveActiveStudentLessonRecords(): array
+    {
+        $filters = $this->getTopUnderFiveFilters();
+
+        $lessons = Lesson::select(['id', 'name'])
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+
+        $summaries = $this->getTopFiveSummaryBuilder()
+            ->selectRaw('year, month, SUM(active_student) as total_active_student, branch_id')
+            ->orderBy('total_active_student', $order)
+            ->get();
+
+        $branchIds = [
+            Arr::get($summaries[0] ?? [], 'branch_id', 0),
+            Arr::get($summaries[1] ?? [], 'branch_id', 0),
+            Arr::get($summaries[2] ?? [], 'branch_id', 0),
+            Arr::get($summaries[3] ?? [], 'branch_id', 0),
+            Arr::get($summaries[4] ?? [], 'branch_id', 0),
+        ];
+
+        $results = collect();
+
+        foreach ($branchIds as $branchId) {
+            $details = [];
+
+            foreach ($lessons as $lesson) {
+                $summaryLessonTotal = SummaryActiveStudentLesson::where('lesson_id', $lesson->id)
+                    ->whereHas('summary', function (Builder $query) use ($branchId) {
+                        $query->where('branch_id', $branchId);
+                    })
+                    ->whereHas('summary', function (Builder $query) use ($filters) {
+                        $query
+                            ->where('year', $filters['periodValues']['year'])
+                            ->where('month', $filters['periodValues']['month']);
+                    })
+                    ->get()
+                    ->sum('total');
+
+                $details[] = [
+                    'lesson_id' => $lesson->id,
+                    'lesson_name' => $lesson->name,
+                    'total' => $summaryLessonTotal,
+                ];
+            }
+
+            $results->push([
+                'year' => $filters['periodValues']['year'],
+                'month' =>$filters['periodValues']['month'],
+                'branch_id' => $branchId,
+                'details' => $details,
+            ]);
+        }
+
+        return [
+            'results' => $results,
+            'lessons' => $lessons,
+        ];
+    }
+
+    public function getTopFiveActiveStudentEducationRecords(): array
+    {
+        $filters = $this->getTopUnderFiveFilters();
+
+        $educations = Education::select(['id', 'name'])
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+
+        $summaries = $this->getTopFiveSummaryBuilder()
+            ->selectRaw('year, month, SUM(active_student) as total_active_student, branch_id')
+            ->orderBy('total_active_student', $order)
+            ->get();
+
+        $branchIds = [
+            Arr::get($summaries[0] ?? [], 'branch_id', 0),
+            Arr::get($summaries[1] ?? [], 'branch_id', 0),
+            Arr::get($summaries[2] ?? [], 'branch_id', 0),
+            Arr::get($summaries[3] ?? [], 'branch_id', 0),
+            Arr::get($summaries[4] ?? [], 'branch_id', 0),
+        ];
+
+        $results = collect();
+
+        foreach ($branchIds as $branchId) {
+            $details = [];
+
+            foreach ($educations as $education) {
+                $summaryEducationTotal = SummaryActiveStudentEducation::where('education_id', $education->id)
+                    ->whereHas('summary', function (Builder $query) use ($branchId) {
+                        $query->where('branch_id', $branchId);
+                    })
+                    ->whereHas('summary', function (Builder $query) use ($filters) {
+                        $query
+                            ->where('year', $filters['periodValues']['year'])
+                            ->where('month', $filters['periodValues']['month']);
+                    })
+                    ->get()
+                    ->sum('total');
+
+                $details[] = [
+                    'education_id' => $education->id,
+                    'education_name' => $education->name,
+                    'total' => $summaryEducationTotal,
+                ];
+            }
+
+            $results->push([
+                'year' => $filters['periodValues']['year'],
+                'month' =>$filters['periodValues']['month'],
+                'branch_id' => $branchId,
+                'details' => $details,
+            ]);
+        }
+
+        return [
+            'results' => $results,
+            'educations' => $educations,
+        ];
+    }
+
     private function getPeriodValues(
         string $startPeriod,
         string $endPeriod,

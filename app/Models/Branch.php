@@ -36,4 +36,9 @@ class Branch extends Model
     {
         return $this->hasMany(ImportedFee::class);
     }
+
+    public function summaries(): HasMany
+    {
+        return $this->hasMany(Summary::class);
+    }
 }

@@ -59,9 +59,10 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Locations',
                 'Masters',
+                'Roles and Permissions',
                 'Imports',
                 'Data Analysis',
-                'Roles and Permissions',
+                'Reports',
                 'Settings',
             ]);
     }
