@@ -23,17 +23,24 @@ class BranchResource extends Resource
 
     protected static ?string $navigationGroup = 'Locations';
 
+    public static function getModelLabel(): string
+    {
+        return __('Branch');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Details')
+                Forms\Components\Section::make(__('Details'))
                     ->schema([
                         Forms\Components\TextInput::make('code')
+                            ->translateLabel()
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
                         Forms\Components\TextInput::make('name')
+                            ->translateLabel()
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('region_id')
@@ -49,7 +56,7 @@ class BranchResource extends Resource
                             ->searchable()
                             ->preload(),
                     ])->columns(2),
-                Forms\Components\Section::make('Location')
+                Forms\Components\Section::make(__('Location'))
                     ->description(__('Set the location to add a pinpoint on the map.'))
                     ->schema([
                         Forms\Components\TextInput::make('latitude')
@@ -60,10 +67,11 @@ class BranchResource extends Resource
                 Forms\Components\Section::make('Others')
                     ->schema([
                         Forms\Components\Repeater::make('ownerships')
+                            ->translateLabel()
                             ->relationship()
                             ->schema([
                                 Forms\Components\Select::make('user_id')
-                                    ->label(__('Select User'))
+                                    ->label(__('Select user'))
                                     ->relationship(
                                         name: 'user',
                                         titleAttribute: 'name',
@@ -89,14 +97,19 @@ class BranchResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('latitude')
+                    ->translateLabel()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('longitude')
+                    ->translateLabel()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('region.name'),
+                Tables\Columns\TextColumn::make('region.name')
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('ownerships_count')
                     ->label(__('Total Ownerships'))
                     ->counts('ownerships')

@@ -20,7 +20,7 @@ class CompareStudentChart extends ChartWidget
 
         $datasets = [
             [
-                'label' => __('Active Student'),
+                'label' => __('Active student'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_active_student')
@@ -32,7 +32,7 @@ class CompareStudentChart extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('New Student'),
+                'label' => __('New student'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_new_student')
@@ -44,7 +44,7 @@ class CompareStudentChart extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('Inactive Student'),
+                'label' => __('Inactive student'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_inactive_student')
@@ -56,7 +56,7 @@ class CompareStudentChart extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('Leave Student'),
+                'label' => __('Leave student'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_leave_student')

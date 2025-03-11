@@ -28,6 +28,7 @@ class FilterService
     public function filterByMonth(bool $isMultiple = true)
     {
         return SelectFilter::make('month')
+            ->translateLabel()
             ->options(Month::class)
             ->multiple($isMultiple)
             ->searchable();

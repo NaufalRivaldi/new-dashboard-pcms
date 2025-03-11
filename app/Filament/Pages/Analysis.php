@@ -24,11 +24,13 @@ class Analysis extends Page
     public function filtersForm(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Filter Data')
+            Forms\Components\Section::make(__('Filter'))
                 ->schema([
                     Forms\Components\TextInput::make('start_period')
+                        ->translateLabel()
                         ->type('month'),
                     Forms\Components\TextInput::make('end_period')
+                        ->translateLabel()
                         ->type('month'),
                     Forms\Components\Select::make('branch_id')
                         ->label(__('Branch'))

@@ -226,10 +226,12 @@ class ImportService
             ->beforeUploadField([
                 app(FormService::class)->branchSelectOption(),
                 Select::make('month')
+                    ->translateLabel()
                     ->options(Month::class)
                     ->searchable()
                     ->required(),
                 TextInput::make('year')
+                    ->translateLabel()
                     ->required()
                     ->numeric()
                     ->minValue(2000)

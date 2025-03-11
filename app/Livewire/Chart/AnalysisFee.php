@@ -21,7 +21,7 @@ class AnalysisFee extends ChartWidget
 
         $datasets = [
             [
-                'label' => __('Total Fee'),
+                'label' => __('Total fee'),
                 'data' => $data
                     ->pluck('total_total_fee')
                     ->transform(function ($value) {
@@ -34,7 +34,7 @@ class AnalysisFee extends ChartWidget
                 'tension' => 0,
             ],
             [
-                'label' => __('Registration Fee'),
+                'label' => __('Registration fee'),
                 'data' => $data
                     ->pluck('total_registration_fee')
                     ->transform(function ($value) {
@@ -45,7 +45,7 @@ class AnalysisFee extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('Course Fee'),
+                'label' => __('Course fee'),
                 'data' => $data
                     ->pluck('total_course_fee')
                     ->transform(function ($value) {

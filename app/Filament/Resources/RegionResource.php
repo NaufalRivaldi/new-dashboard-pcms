@@ -21,6 +21,11 @@ class RegionResource extends Resource
 
     protected static ?string $navigationGroup = 'Locations';
 
+    public static function getModelLabel(): string
+    {
+        return __('Region');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -36,6 +41,7 @@ class RegionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('branches_count')
                     ->label(__('Total Branches'))

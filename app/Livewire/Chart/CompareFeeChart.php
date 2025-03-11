@@ -20,7 +20,7 @@ class CompareFeeChart extends ChartWidget
 
         $datasets = [
             [
-                'label' => __('Total Fee'),
+                'label' => __('Total fee'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_total_fee')
@@ -34,7 +34,7 @@ class CompareFeeChart extends ChartWidget
                 'tension' => 0,
             ],
             [
-                'label' => __('Registration Fee'),
+                'label' => __('Registration fee'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_registration_fee')
@@ -46,7 +46,7 @@ class CompareFeeChart extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('Course Fee'),
+                'label' => __('Course fee'),
                 'data' => $data
                     ->flatten(1)
                     ->pluck('total_course_fee')

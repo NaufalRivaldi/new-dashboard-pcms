@@ -24,21 +24,29 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'Masters';
 
+    public static function getModelLabel(): string
+    {
+        return __('User');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Personal Details')
+                Section::make(__('Personal Details'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->translateLabel()
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
+                            ->translateLabel()
                             ->email()
                             ->unique(ignoreRecord: true)
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('roles')
+                            ->translateLabel()
                             ->relationship('roles', 'name')
                             ->preload()
                             ->searchable(),
@@ -65,13 +73,18 @@ class UserResource extends Resource
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('email')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
-                Tables\Columns\ToggleColumn::make('status'),
+                Tables\Columns\ToggleColumn::make('status')
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('roles')
+                    ->translateLabel()
                     ->formatStateUsing(fn (string $state): string => json_decode($state, true)['name']),
                 Tables\Columns\ViewColumn::make('branches')
+                    ->label(__('Branches'))
                     ->view('filament.tables.columns.user-branches')
             ])
             ->modifyQueryUsing(function (Builder $query) {
@@ -81,6 +94,7 @@ class UserResource extends Resource
             })
             ->filters([
                 SelectFilter::make('roles')
+                    ->translateLabel()
                     ->multiple()
                     ->preload()
                     ->relationship('roles', 'name')

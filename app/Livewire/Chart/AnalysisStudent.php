@@ -20,7 +20,7 @@ class AnalysisStudent extends ChartWidget
 
         $datasets = [
             [
-                'label' => __('Active Student'),
+                'label' => __('Active student'),
                 'data' => $data
                     ->pluck('total_active_student')
                     ->transform(function ($value) {
@@ -31,7 +31,7 @@ class AnalysisStudent extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('New Student'),
+                'label' => __('New student'),
                 'data' => $data
                     ->pluck('total_new_student')
                     ->transform(function ($value) {
@@ -42,7 +42,7 @@ class AnalysisStudent extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('Inactive Student'),
+                'label' => __('Inactive student'),
                 'data' => $data
                     ->pluck('total_inactive_student')
                     ->transform(function ($value) {
@@ -53,7 +53,7 @@ class AnalysisStudent extends ChartWidget
                 'borderWidth' => 0,
             ],
             [
-                'label' => __('Leave Student'),
+                'label' => __('Leave student'),
                 'data' => $data
                     ->pluck('total_leave_student')
                     ->transform(function ($value) {

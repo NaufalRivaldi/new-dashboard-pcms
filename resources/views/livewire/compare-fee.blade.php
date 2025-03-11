@@ -14,19 +14,19 @@
                         class="px-4 py-3 border-b dark:border-gray-700"
                         colspan="2"
                     >
-                        {{ __('Registration Fee') }}
+                        {{ __('Registration fee') }}
                     </th>
                     <th
                         class="px-4 py-3 border-b dark:border-gray-700"
                         colspan="2"
                     >
-                        {{ __('Course Fee') }}
+                        {{ __('Course fee') }}
                     </th>
                     <th
                         class="px-4 py-3 border-b dark:border-gray-700"
                         colspan="2"
                     >
-                        {{ __('Total Fee') }}
+                        {{ __('Total fee') }}
                     </th>
                 </tr>
                 <tr>

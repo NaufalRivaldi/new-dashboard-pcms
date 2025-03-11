@@ -21,13 +21,16 @@ class ReportBranchNotImportedDataResource extends Resource
 {
     protected static ?string $model = Branch::class;
 
-    protected static ?string $navigationLabel = 'Unimported Branches';
-
     protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 
     protected static ?string $navigationGroup = 'Reports';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getModelLabel(): string
+    {
+        return __('Unimported Branches');
+    }
 
     public static function form(Form $form): Form
     {
@@ -40,18 +43,23 @@ class ReportBranchNotImportedDataResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('region.name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\ViewColumn::make('ownerships')
+                    ->translateLabel()
                     ->view('filament.tables.columns.branch-ownerships'),
             ])
             ->filters([
                 Filter::make('period')
                     ->form([
                         TextInput::make('period')
+                            ->translateLabel()
                             ->type('month'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {

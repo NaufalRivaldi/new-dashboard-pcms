@@ -21,11 +21,17 @@ class LessonResource extends Resource
 
     protected static ?string $navigationGroup = 'Masters';
 
+    public static function getModelLabel(): string
+    {
+        return __('Lesson');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(255)
                     ->readOnlyOn('edit'),
@@ -37,6 +43,7 @@ class LessonResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(),
             ])
             ->filters([

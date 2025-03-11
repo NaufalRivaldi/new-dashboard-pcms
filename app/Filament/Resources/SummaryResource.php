@@ -51,14 +51,16 @@ class SummaryResource extends Resource
                                     !auth()->user()->isAdmin
                                 ),
                         ]),
-                        Forms\Components\Section::make('Date')->schema([
+                        Forms\Components\Section::make(__('Date'))->schema([
                             Forms\Components\Select::make('month')
+                                ->translateLabel()
                                 ->options(Month::class)
                                 ->searchable()
                                 ->required()
                                 ->disabledOn('edit')
                                 ->live(onBlur: true),
                             Forms\Components\TextInput::make('year')
+                                ->translateLabel()
                                 ->required()
                                 ->numeric()
                                 ->minValue(2000)
@@ -120,9 +122,10 @@ class SummaryResource extends Resource
                         'lg' => 1,
                     ]),
                     Forms\Components\Grid::make(1)->schema([
-                        Forms\Components\Section::make('Fee')
+                        Forms\Components\Section::make(__('Fee'))
                             ->schema([
                                 Forms\Components\TextInput::make('registration_fee')
+                                    ->translateLabel()
                                     ->required()
                                     ->numeric()
                                     ->default(0)
@@ -138,6 +141,7 @@ class SummaryResource extends Resource
                                         $set('royalty', $calculationResult['royalty']);
                                     }),
                                 Forms\Components\TextInput::make('course_fee')
+                                    ->translateLabel()
                                     ->required()
                                     ->numeric()
                                     ->default(0)
@@ -153,6 +157,7 @@ class SummaryResource extends Resource
                                         $set('royalty', $calculationResult['royalty']);
                                     }),
                                 Forms\Components\TextInput::make('total_fee')
+                                    ->translateLabel()
                                     ->helperText(__('Calculate automated.'))
                                     ->required()
                                     ->numeric()
@@ -172,28 +177,32 @@ class SummaryResource extends Resource
                         Forms\Components\Section::make('Student')
                             ->schema([
                                 Forms\Components\TextInput::make('active_student')
+                                    ->translateLabel()
                                     ->required()
                                     ->numeric()
                                     ->default(0)
                                     ->suffix(__('Students')),
                                 Forms\Components\TextInput::make('new_student')
+                                    ->translateLabel()
                                     ->required()
                                     ->numeric()
                                     ->default(0)
                                     ->suffix(__('Students')),
                                 Forms\Components\TextInput::make('inactive_student')
+                                    ->translateLabel()
                                     ->required()
                                     ->numeric()
                                     ->default(0)
                                     ->suffix(__('Students')),
                                 Forms\Components\TextInput::make('leave_student')
+                                    ->translateLabel()
                                     ->required()
                                     ->numeric()
                                     ->default(0)
                                     ->suffix(__('Students')),
                             ])
                             ->columns(2),
-                        Forms\Components\Section::make('Student Active Based On Education')
+                        Forms\Components\Section::make(__('Student Active Based On Education'))
                             ->schema([
                                 Forms\Components\Repeater::make('summary_active_student_education')
                                     ->label('')
@@ -211,6 +220,7 @@ class SummaryResource extends Resource
                                             ->searchable()
                                             ->preload(),
                                         Forms\Components\TextInput::make('total')
+                                            ->translateLabel()
                                             ->required()
                                             ->numeric()
                                             ->suffix('Students')
@@ -218,7 +228,7 @@ class SummaryResource extends Resource
                                     ])
                                     ->columns(2),
                             ]),
-                        Forms\Components\Section::make('Student Active Based On Lesson')
+                        Forms\Components\Section::make(__('Student Active Based On Lesson'))
                             ->schema([
                                 Forms\Components\Repeater::make('summary_active_student_lesson')
                                     ->label('')
@@ -236,6 +246,7 @@ class SummaryResource extends Resource
                                             ->searchable()
                                             ->preload(),
                                         Forms\Components\TextInput::make('total')
+                                            ->translateLabel()
                                             ->required()
                                             ->numeric()
                                             ->suffix('Students')
@@ -258,18 +269,21 @@ class SummaryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('branch.name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('month')
+                    ->translateLabel()
                     ->formatStateUsing(fn (string $state): string => Month::name($state))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('year')
+                    ->translateLabel()
                     ->searchable(isIndividual: true)
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('status')
                     ->label(__('Is Approved?'))
                     ->tooltip(
-                        __('Only user with :roles roles can approved the summary', [
+                        __('Only user with :roles roles can approved the summary.', [
                             'roles' => implode(
                                 ', ',
                                 collect(config('permission.approver_roles'))
@@ -292,8 +306,10 @@ class SummaryResource extends Resource
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('author.name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('approver.name')
+                    ->translateLabel()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

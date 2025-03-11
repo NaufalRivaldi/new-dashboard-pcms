@@ -21,6 +21,11 @@ class EducationResource extends Resource
 
     protected static ?string $navigationGroup = 'Masters';
 
+    public static function getModelLabel(): string
+    {
+        return __('Education');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -28,13 +33,15 @@ class EducationResource extends Resource
                 Forms\Components\Section::make('')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->translateLabel()
                             ->required()
                             ->maxLength(255)
                             ->readOnlyOn('edit'),
                     ]),
-                Forms\Components\Section::make('Others')
+                Forms\Components\Section::make(__('Others'))
                     ->schema([
                         Forms\Components\ColorPicker::make('color')
+                            ->translateLabel()
                             ->regex('/^#([a-f0-9]{6}|[a-f0-9]{3})\b$/')
                             ->helperText(__('For the chart colors in the reporting feature.'))
                     ])
@@ -47,8 +54,10 @@ class EducationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\ColorColumn::make('color')
+                    ->translateLabel()
                     ->copyable()
                     ->copyMessage(__('Color code copied')),
             ])

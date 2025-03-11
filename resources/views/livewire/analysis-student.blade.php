@@ -5,10 +5,10 @@
             <thead class="bg-gray-50 text-left text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-white">
                 <tr>
                     <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Period') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Active Student') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('New Student') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Inactive Student') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Leave Student') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Active student') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('New student') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Inactive student') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Leave student') }}</th>
                 </tr>
             </thead>
 

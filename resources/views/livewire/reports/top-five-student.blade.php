@@ -8,16 +8,16 @@
                         {{ __('Branch') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('Active Student') }}
+                        {{ __('Active student') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('New Student') }}
+                        {{ __('New student') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('Inactive Student') }}
+                        {{ __('Inactive student') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('Leave Student') }}
+                        {{ __('Leave student') }}
                     </th>
                 </tr>
             </thead>

@@ -26,11 +26,13 @@ class TopOrUnderFive extends Page
     public function filtersForm(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Filter Data')
+            Forms\Components\Section::make(__('Filter'))
                 ->schema([
                     Forms\Components\TextInput::make('period')
+                        ->translateLabel()
                         ->type('month'),
                     Forms\Components\Select::make('type')
+                        ->translateLabel()
                         ->options([
                             'top' => 'Top 5',
                             'under' => 'Under 5',

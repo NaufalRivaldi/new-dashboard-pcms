@@ -31,6 +31,11 @@ class ImportedActiveStudentResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static function getModelLabel(): string
+    {
+        return __('Import LA06');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -43,14 +48,16 @@ class ImportedActiveStudentResource extends Resource
                                 ->disabledOn('edit')
                                 ->live(onBlur: true),
                         ]),
-                        Forms\Components\Section::make('Date')->schema([
+                        Forms\Components\Section::make(__('Date'))->schema([
                             Forms\Components\Select::make('month')
+                                ->translateLabel()
                                 ->options(Month::class)
                                 ->searchable()
                                 ->required()
                                 ->disabledOn('edit')
                                 ->live(onBlur: true),
                             Forms\Components\TextInput::make('year')
+                                ->translateLabel()
                                 ->required()
                                 ->numeric()
                                 ->minValue(2000)
@@ -63,12 +70,13 @@ class ImportedActiveStudentResource extends Resource
                         'lg' => 1,
                     ]),
                     Forms\Components\Grid::make(1)->schema([
-                        Forms\Components\Section::make('Details')->schema([
+                        Forms\Components\Section::make(__('Details'))->schema([
                             Forms\Components\TextInput::make('total')
+                                ->translateLabel()
                                 ->required()
                                 ->numeric()
                                 ->readOnly()
-                                ->suffix('Stundents')
+                                ->suffix(__('Students'))
                                 ->default(0),
                             Forms\Components\Repeater::make('details')
                                 ->label('')
@@ -86,6 +94,7 @@ class ImportedActiveStudentResource extends Resource
                                         ->searchable()
                                         ->preload(),
                                     Forms\Components\TextInput::make('total')
+                                        ->translateLabel()
                                         ->required()
                                         ->numeric()
                                         ->suffix('Stundents')
@@ -116,18 +125,23 @@ class ImportedActiveStudentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('branch.name')
+                    ->translateLabel()
                     ->searchable(isIndividual:true),
                 Tables\Columns\TextColumn::make('month')
+                    ->translateLabel()
                     ->formatStateUsing(fn (string $state): string => Month::name($state))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('year')
+                    ->translateLabel()
                     ->sortable()
                     ->searchable(isIndividual:true),
                 Tables\Columns\TextColumn::make('total')
+                    ->translateLabel()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
+                    ->translateLabel()
                     ->numeric()
                     ->searchable(isIndividual:true)
                     ->toggleable(isToggledHiddenByDefault: true),

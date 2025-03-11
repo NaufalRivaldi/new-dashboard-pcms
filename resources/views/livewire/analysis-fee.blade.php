@@ -5,9 +5,9 @@
             <thead class="bg-gray-50 text-left text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-white">
                 <tr>
                     <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Period') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Registration Fee') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Course Fee') }}</th>
-                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Total Fee') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Registration fee') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Course fee') }}</th>
+                    <th class="px-4 py-3 border-b dark:border-gray-700">{{ __('Total fee') }}</th>
                 </tr>
             </thead>
 

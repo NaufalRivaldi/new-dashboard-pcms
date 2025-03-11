@@ -8,13 +8,13 @@
                         {{ __('Branch') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('Registration Fee') }}
+                        {{ __('Registration fee') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('Course Fee') }}
+                        {{ __('Course fee') }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ __('Total Fee') }}
+                        {{ __('Total fee') }}
                     </th>
                 </tr>
             </thead>

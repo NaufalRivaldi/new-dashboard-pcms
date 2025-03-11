@@ -24,14 +24,16 @@ class Compare extends Page
     public function filtersForm(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Filter Data')
+            Forms\Components\Section::make(__('Filter'))
                 ->schema([
                     Forms\Components\TextInput::make('start_period')
+                        ->translateLabel()
                         ->type('month'),
                     Forms\Components\TextInput::make('end_period')
+                        ->translateLabel()
                         ->type('month'),
                     Forms\Components\Select::make('first_branch_id')
-                        ->label(__('First Branch'))
+                        ->label(__('First branch'))
                         ->options(
                             Branch::select([
                                     'id',
@@ -42,7 +44,7 @@ class Compare extends Page
                         )
                         ->searchable(),
                     Forms\Components\Select::make('second_branch_id')
-                        ->label(__('Second Branch'))
+                        ->label(__('Second branch'))
                         ->options(
                             Branch::select([
                                     'id',
@@ -53,7 +55,7 @@ class Compare extends Page
                         )
                         ->searchable(),
                     Forms\Components\Select::make('first_region_id')
-                        ->label(__('First Region'))
+                        ->label(__('First region'))
                         ->options(
                             Region::select([
                                     'id',
@@ -64,7 +66,7 @@ class Compare extends Page
                         )
                         ->searchable(),
                     Forms\Components\Select::make('second_region_id')
-                        ->label(__('Second Region'))
+                        ->label(__('Second region'))
                         ->options(
                             Region::select([
                                     'id',
