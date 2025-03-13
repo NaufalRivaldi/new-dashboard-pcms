@@ -23,6 +23,11 @@ class TopOrUnderFive extends Page
 
     protected static ?string $navigationLabel = 'Top or Under 5';
 
+    public function persistsFiltersInSession(): bool
+    {
+        return false;
+    }
+
     public function filtersForm(Form $form): Form
     {
         return $form->schema([

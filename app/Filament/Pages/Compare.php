@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Branch;
 use App\Models\Region;
+use App\Traits\HasReportFilter;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -13,13 +14,18 @@ use Filament\Pages\Page;
 
 class Compare extends Page
 {
-    use HasFiltersForm, HasPageShield;
+    use HasFiltersForm, HasPageShield, HasReportFilter;
 
     protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
 
     protected static ?string $navigationGroup = 'Data Analysis';
 
     protected static string $view = 'filament.pages.compare';
+
+    public function persistsFiltersInSession(): bool
+    {
+        return false;
+    }
 
     public function filtersForm(Form $form): Form
     {
@@ -54,47 +60,17 @@ class Compare extends Page
                                 ->pluck('name', 'id')
                         )
                         ->searchable(),
-                    Forms\Components\Select::make('first_region_id')
-                        ->label(__('First region'))
-                        ->options(
-                            Region::select([
-                                    'id',
-                                    'name',
-                                ])
-                                ->orderBy('name')
-                                ->pluck('name', 'id')
-                        )
-                        ->searchable(),
-                    Forms\Components\Select::make('second_region_id')
-                        ->label(__('Second region'))
-                        ->options(
-                            Region::select([
-                                    'id',
-                                    'name',
-                                ])
-                                ->orderBy('name')
-                                ->pluck('name', 'id')
-                        )
-                        ->searchable(),
                 ])->columns(2),
         ]);
     }
 
-    public function getBranchName(?int $branchId = null): string
+    protected function defaultBranchName(): string
     {
-        if (!is_null($branchId)) {
-            return Branch::find($branchId)->name ?? '-';
-        }
-
-        return '-';
+        return __('-');
     }
 
-    public function getFormattedPeriod(?string $period = null): ?string
+    protected function defaultRegionName(): string
     {
-        if (!is_null($period)) {
-            return Carbon::parse($period)->format('F Y');
-        }
-
-        return null;
+        return __('-');
     }
 }

@@ -7,7 +7,13 @@
         <h1 class="font-bold">
             {{ __('SUMMARY OF RECEIPT REPORT') }}
         </h1>
-        <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @if ($this->isBranchFiltered())
+            <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @endif
+
+        @if ($this->isRegionFiltered())
+            <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
+        @endif
         <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
     </center>
 
@@ -21,7 +27,13 @@
         <h1 class="font-bold">
             {{ __('SUMMARY OF TOTAL ROYALTY') }}
         </h1>
-        <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @if ($this->isBranchFiltered())
+            <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @endif
+
+        @if ($this->isRegionFiltered())
+            <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
+        @endif
         <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
     </center>
 
@@ -35,7 +47,13 @@
         <h1 class="font-bold">
             {{ __('SUMMARY OF STUDENT') }}
         </h1>
-        <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @if ($this->isBranchFiltered())
+            <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @endif
+
+        @if ($this->isRegionFiltered())
+            <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
+        @endif
         <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
     </center>
 
@@ -49,7 +67,13 @@
         <h1 class="font-bold">
             {{ __('SUMMARY OF ACTIVE STUDENT BASED ON LESSON') }}
         </h1>
-        <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @if ($this->isBranchFiltered())
+            <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @endif
+
+        @if ($this->isRegionFiltered())
+            <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
+        @endif
         <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
     </center>
 
@@ -63,7 +87,13 @@
         <h1 class="font-bold">
             {{ __('SUMMARY OF ACTIVE STUDENT BASED ON EDUCATION') }}
         </h1>
-        <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @if ($this->isBranchFiltered())
+            <h2>{{ __('BRANCH: :branch', ['branch' => $this->getBranchName($filters['branch_id'])]) }}</h2>
+        @endif
+
+        @if ($this->isRegionFiltered())
+            <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
+        @endif
         <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
     </center>
 

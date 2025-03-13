@@ -20,8 +20,18 @@ class AnalysisService
         $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
         parse_str($queryParams, $params);
 
-        $endPeriod = $params['filters']['end_period'] ?? Carbon::now()->format('Y-m');
-        $startPeriod = $params['filters']['start_period'] ?? Carbon::parse($endPeriod)->subMonth(11)->format('Y-m');
+        $endPeriod = (
+                isset($params['filters']['end_period'])
+                && !empty($params['filters']['end_period'])
+            )
+            ? $params['filters']['end_period']
+            : Carbon::now()->format('Y-m');
+        $startPeriod = (
+                isset($params['filters']['start_period'])
+                && !empty($params['filters']['start_period'])
+            )
+            ? $params['filters']['start_period']
+            : Carbon::parse($endPeriod)->subMonth(11)->format('Y-m');
 
         $periodValues = $this->getPeriodValues($startPeriod, $endPeriod);
 
@@ -301,22 +311,28 @@ class AnalysisService
         $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
         parse_str($queryParams, $params);
 
-        $endPeriod = Arr::get($params, 'filters.end_period', Carbon::now()->format('Y-m'));
-        $startPeriod = Arr::get($params, 'filters.start_period', Carbon::parse($endPeriod)->subMonth(11)->format('Y-m'));
+        $endPeriod = (
+                isset($params['filters']['end_period'])
+                && !empty($params['filters']['end_period'])
+            )
+            ? $params['filters']['end_period']
+            : Carbon::now()->format('Y-m');
+        $startPeriod = (
+                isset($params['filters']['start_period'])
+                && !empty($params['filters']['start_period'])
+            )
+            ? $params['filters']['start_period']
+            : Carbon::parse($endPeriod)->subMonth(11)->format('Y-m');
 
         $periodValues = $this->getPeriodValues($startPeriod, $endPeriod);
 
         $firstBranchId = Arr::get($params, 'filters.first_branch_id');
         $secondBranchId = Arr::get($params, 'filters.second_branch_id');
-        $firstRegionId = Arr::get($params, 'filters.first_region_id');
-        $secondRegionId = Arr::get($params, 'filters.second_region_id');
 
         return [
             'periodValues' => $periodValues,
             'firstBranchId' => $firstBranchId,
             'secondBranchId' => $secondBranchId,
-            'firstRegionId' => $firstRegionId,
-            'secondRegionId' => $secondRegionId,
         ];
     }
 
@@ -325,17 +341,11 @@ class AnalysisService
         $filters = $this->getCompareFilters();
 
         $isComparedBranchExists = !is_null($filters['firstBranchId']) && !is_null($filters['secondBranchId']);
-        $isComparedRegionExists = !is_null($filters['firstRegionId']) && !is_null($filters['secondRegionId']);
 
         return Summary::when($isComparedBranchExists, function (Builder $query) use ($filters) {
                 $query
                     ->where('branch_id', $filters['firstBranchId'])
                     ->orWhere('branch_id', $filters['secondBranchId']);
-            })
-            ->when($isComparedRegionExists, function (Builder $query) use ($filters) {
-                $query
-                    ->where('region_id', $filters['firstRegionId'])
-                    ->orWhere('region_id', $filters['secondRegionId']);
             })
             ->where(function (Builder $query) use ($filters) {
                 foreach ($filters['periodValues'] as $key => $period) {
@@ -654,7 +664,13 @@ class AnalysisService
         $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
         parse_str($queryParams, $params);
 
-        $period = collect(explode('-', Arr::get($params, 'filters.period', Carbon::now()->format('Y-m'))))
+        $period = (
+                isset($params['filters']['period'])
+                && !empty($params['filters']['period'])
+            )
+            ? $params['filters']['period']
+            : Carbon::now()->format('Y-m');
+        $period = collect(explode('-', $period))
             ->map(fn ($value): int => (int) $value);
 
         $periodValues = [];
