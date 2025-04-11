@@ -14,6 +14,8 @@
 
     <livewire:reports.top-five-fee />
 
+    <hr>
+
     <center>
         <h1 class="font-bold">
             {{ __(':type 5 SUMMARY OF ROYALTY', ['type' => str()->upper($filters['type'] ?? 'top')]) }}
@@ -24,6 +26,8 @@
     @livewire(\App\Livewire\Chart\TopFiveRoyaltyChart::class)
 
     <livewire:reports.top-five-royalty />
+
+    <hr>
 
     <center>
         <h1 class="font-bold">
@@ -36,6 +40,8 @@
 
     <livewire:reports.top-five-student />
 
+    <hr>
+
     <center>
         <h1 class="font-bold">
             {{ __(':type 5 SUMMARY OF ACTIVE STUDENT BASED ON LESSON', ['type' => str()->upper($filters['type'] ?? 'top')]) }}
@@ -46,6 +52,8 @@
     @livewire(\App\Livewire\Chart\TopFiveActiveStudentLessonChart::class)
 
     <livewire:reports.top-five-active-student-lesson />
+
+    <hr>
 
     <center>
         <h1 class="font-bold">

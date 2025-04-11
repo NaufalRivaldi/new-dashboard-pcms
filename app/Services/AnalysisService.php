@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AnalysisService
 {
@@ -187,46 +188,59 @@ class AnalysisService
     {
         $filters = $this->getFilters();
 
-        $lessons = Lesson::select(['id', 'name'])
-            ->orderBy('name', 'asc')
-            ->get();
+        $lessons = Lesson::select(['id', 'name'])->orderBy('name', 'asc')->get();
+
+        $periodMonthPairs = collect($filters['periodValues'])->flatMap(function ($period) {
+            return collect($period['months'])->map(function ($month) use ($period) {
+                return ['year' => $period['year'], 'month' => $month];
+            });
+        });
+
+        $summaryQuery = SummaryActiveStudentLesson::select([
+                'lesson_id',
+                'summaries.year',
+                'summaries.month',
+                DB::raw('SUM(summary_active_student_lessons.total) as total')
+            ])
+            ->join('summaries', 'summary_active_student_lessons.summary_id', '=', 'summaries.id')
+            ->join('branches', 'summaries.branch_id', '=', 'branches.id')
+            ->whereIn('lesson_id', $lessons->pluck('id'))
+            ->where(function ($query) use ($periodMonthPairs) {
+                foreach ($periodMonthPairs as $pair) {
+                    $query->orWhere(function ($q) use ($pair) {
+                        $q->where('summaries.year', $pair['year'])
+                        ->where('summaries.month', $pair['month']);
+                    });
+                }
+            });
+
+        if ($filters['branchId']) {
+            $summaryQuery->where('summaries.branch_id', $filters['branchId']);
+        }
+        if ($filters['regionId']) {
+            $summaryQuery->where('branches.region_id', $filters['regionId']);
+        }
+
+        $summaryData = $summaryQuery
+            ->groupBy('lesson_id', 'summaries.year', 'summaries.month')
+            ->get()
+            ->groupBy(fn ($item) => "{$item->year}-{$item->month}")
+            ->map(fn ($group) => $group->keyBy('lesson_id'));
 
         $results = collect();
 
         foreach ($filters['periodValues'] as $period) {
             foreach ($period['months'] as $month) {
+                $key = "{$period['year']}-{$month}";
                 $details = [];
 
                 foreach ($lessons as $lesson) {
-                    $summaryLessonTotal = SummaryActiveStudentLesson::where('lesson_id', $lesson->id)
-                        ->when($filters['branchId'], function (Builder $query, $branchId) {
-                            $query->whereHas('summary', function (Builder $query) use ($branchId) {
-                                $query->where('branch_id', $branchId);
-                            });
-                        })
-                        ->when($filters['regionId'], function (Builder $query, $regionId) {
-                            $query->whereHas('summary', function (Builder $query) use ($regionId) {
-                                $query->whereHas('branch', function (Builder $query) use ($regionId) {
-                                    $query->where('region_id', $regionId);
-                                });
-                            });
-                        })
-                        ->whereHas('summary', function (Builder $query) use ($period, $month) {
-                            $query->where(function (Builder $query) use ($period, $month) {
-                                $query->where(function (Builder $query) use ($period, $month) {
-                                    $query
-                                        ->where('year', $period['year'])
-                                        ->where('month', $month);
-                                });
-                            });
-                        })
-                        ->get()
-                        ->sum('total');
+                    $total = $summaryData[$key][$lesson->id]->total ?? 0;
 
                     $details[] = [
                         'lesson_id' => $lesson->id,
                         'lesson_name' => $lesson->name,
-                        'total' => $summaryLessonTotal,
+                        'total' => $total,
                     ];
                 }
 
@@ -248,46 +262,59 @@ class AnalysisService
     {
         $filters = $this->getFilters();
 
-        $educations = Education::select(['id', 'name', 'color'])
-            ->orderBy('name', 'asc')
-            ->get();
+        $educations = Education::select(['id', 'name', 'color'])->orderBy('name', 'asc')->get();
+
+        $periodMonthPairs = collect($filters['periodValues'])->flatMap(function ($period) {
+            return collect($period['months'])->map(function ($month) use ($period) {
+                return ['year' => $period['year'], 'month' => $month];
+            });
+        });
+
+        $summaryQuery = SummaryActiveStudentEducation::select([
+                'education_id',
+                'summaries.year',
+                'summaries.month',
+                DB::raw('SUM(summary_active_student_education.total) as total')
+            ])
+            ->join('summaries', 'summary_active_student_education.summary_id', '=', 'summaries.id')
+            ->join('branches', 'summaries.branch_id', '=', 'branches.id')
+            ->whereIn('education_id', $educations->pluck('id'))
+            ->where(function ($query) use ($periodMonthPairs) {
+                foreach ($periodMonthPairs as $pair) {
+                    $query->orWhere(function ($q) use ($pair) {
+                        $q->where('summaries.year', $pair['year'])
+                        ->where('summaries.month', $pair['month']);
+                    });
+                }
+            });
+
+        if ($filters['branchId']) {
+            $summaryQuery->where('summaries.branch_id', $filters['branchId']);
+        }
+        if ($filters['regionId']) {
+            $summaryQuery->where('branches.region_id', $filters['regionId']);
+        }
+
+        $summaryData = $summaryQuery
+            ->groupBy('education_id', 'summaries.year', 'summaries.month')
+            ->get()
+            ->groupBy(fn ($item) => "{$item->year}-{$item->month}")
+            ->map(fn ($group) => $group->keyBy('education_id'));
 
         $results = collect();
 
         foreach ($filters['periodValues'] as $period) {
             foreach ($period['months'] as $month) {
+                $key = "{$period['year']}-{$month}";
                 $details = [];
 
                 foreach ($educations as $education) {
-                    $summaryEducationTotal = SummaryActiveStudentEducation::where('education_id', $education->id)
-                        ->when($filters['branchId'], function (Builder $query, $branchId) {
-                            $query->whereHas('summary', function (Builder $query) use ($branchId) {
-                                $query->where('branch_id', $branchId);
-                            });
-                        })
-                        ->when($filters['regionId'], function (Builder $query, $regionId) {
-                            $query->whereHas('summary', function (Builder $query) use ($regionId) {
-                                $query->whereHas('branch', function (Builder $query) use ($regionId) {
-                                    $query->where('region_id', $regionId);
-                                });
-                            });
-                        })
-                        ->whereHas('summary', function (Builder $query) use ($period, $month) {
-                            $query->where(function (Builder $query) use ($period, $month) {
-                                $query->where(function (Builder $query) use ($period, $month) {
-                                    $query
-                                        ->where('year', $period['year'])
-                                        ->where('month', $month);
-                                });
-                            });
-                        })
-                        ->get()
-                        ->sum('total');
+                    $total = $summaryData[$key][$education->id]->total ?? 0;
 
                     $details[] = [
                         'education_id' => $education->id,
                         'education_name' => $education->name,
-                        'total' => $summaryEducationTotal,
+                        'total' => $total,
                     ];
                 }
 
@@ -516,54 +543,62 @@ class AnalysisService
     {
         $filters = $this->getCompareFilters();
 
-        $lessons = Lesson::select(['id', 'name'])
-            ->orderBy('name', 'asc')
-            ->get();
+        $lessons = Lesson::select(['id', 'name'])->orderBy('name', 'asc')->get();
 
         $branchIds = [
             $filters['firstBranchId'],
             $filters['secondBranchId'],
         ];
 
+        $periodMonthPairs = collect($filters['periodValues'])->flatMap(function ($period) {
+            return collect($period['months'])->map(function ($month) use ($period) {
+                return ['year' => $period['year'], 'month' => $month];
+            });
+        });
+
+        $lessonIds = $lessons->pluck('id')->all();
+
+        $summaryQuery = SummaryActiveStudentLesson::select([
+                'lesson_id',
+                'summaries.branch_id',
+                'summaries.year',
+                'summaries.month',
+                DB::raw('SUM(summary_active_student_lessons.total) as total'),
+            ])
+            ->join('summaries', 'summary_active_student_lessons.summary_id', '=', 'summaries.id')
+            ->whereIn('lesson_id', $lessonIds)
+            ->whereIn('summaries.branch_id', $branchIds)
+            ->where(function ($query) use ($periodMonthPairs) {
+                foreach ($periodMonthPairs as $pair) {
+                    $query->orWhere(function ($q) use ($pair) {
+                        $q->where('summaries.year', $pair['year'])
+                        ->where('summaries.month', $pair['month']);
+                    });
+                }
+            })
+            ->groupBy('lesson_id', 'summaries.branch_id', 'summaries.year', 'summaries.month')
+            ->get();
+
+        $groupedData = $summaryQuery->groupBy(fn ($item) => "{$item->year}-{$item->month}-{$item->branch_id}")
+            ->map(fn ($group) => $group->keyBy('lesson_id'));
+
         $results = collect();
 
         foreach ($filters['periodValues'] as $period) {
             foreach ($period['months'] as $month) {
-                $tmpResult = null;
+                $tmpResult = [];
 
                 foreach ($branchIds as $branchId) {
                     $details = [];
 
                     foreach ($lessons as $lesson) {
-                        $summaryLessonTotal = SummaryActiveStudentLesson::where('lesson_id', $lesson->id)
-                            ->when($branchId, function (Builder $query, $branchId) {
-                                $query->whereHas('summary', function (Builder $query) use ($branchId) {
-                                    $query->where('branch_id', $branchId);
-                                });
-                            })
-                            // ->when($filters['regionId'], function (Builder $query, $regionId) {
-                            //     $query->whereHas('summary', function (Builder $query) use ($regionId) {
-                            //         $query->whereHas('branch', function (Builder $query) use ($regionId) {
-                            //             $query->where('region_id', $regionId);
-                            //         });
-                            //     });
-                            // })
-                            ->whereHas('summary', function (Builder $query) use ($period, $month) {
-                                $query->where(function (Builder $query) use ($period, $month) {
-                                    $query->where(function (Builder $query) use ($period, $month) {
-                                        $query
-                                            ->where('year', $period['year'])
-                                            ->where('month', $month);
-                                    });
-                                });
-                            })
-                            ->get()
-                            ->sum('total');
+                        $key = "{$period['year']}-{$month}-{$branchId}";
+                        $total = $groupedData[$key][$lesson->id]->total ?? 0;
 
                         $details[] = [
                             'lesson_id' => $lesson->id,
                             'lesson_name' => $lesson->name,
-                            'total' => $summaryLessonTotal,
+                            'total' => $total,
                         ];
                     }
 
@@ -589,54 +624,62 @@ class AnalysisService
     {
         $filters = $this->getCompareFilters();
 
-        $educations = Education::select(['id', 'name'])
-            ->orderBy('name', 'asc')
-            ->get();
+        $educations = Education::select(['id', 'name'])->orderBy('name', 'asc')->get();
 
         $branchIds = [
             $filters['firstBranchId'],
             $filters['secondBranchId'],
         ];
 
+        $periodMonthPairs = collect($filters['periodValues'])->flatMap(function ($period) {
+            return collect($period['months'])->map(function ($month) use ($period) {
+                return ['year' => $period['year'], 'month' => $month];
+            });
+        });
+
+        $educationIds = $educations->pluck('id')->all();
+
+        $summaryData = SummaryActiveStudentEducation::select([
+                'education_id',
+                'summaries.branch_id',
+                'summaries.year',
+                'summaries.month',
+                DB::raw('SUM(summary_active_student_education.total) as total'),
+            ])
+            ->join('summaries', 'summary_active_student_education.summary_id', '=', 'summaries.id')
+            ->whereIn('education_id', $educationIds)
+            ->whereIn('summaries.branch_id', $branchIds)
+            ->where(function ($query) use ($periodMonthPairs) {
+                foreach ($periodMonthPairs as $pair) {
+                    $query->orWhere(function ($q) use ($pair) {
+                        $q->where('summaries.year', $pair['year'])
+                        ->where('summaries.month', $pair['month']);
+                    });
+                }
+            })
+            ->groupBy('education_id', 'summaries.branch_id', 'summaries.year', 'summaries.month')
+            ->get();
+
+        $groupedData = $summaryData->groupBy(fn ($item) => "{$item->year}-{$item->month}-{$item->branch_id}")
+            ->map(fn ($group) => $group->keyBy('education_id'));
+
         $results = collect();
 
         foreach ($filters['periodValues'] as $period) {
             foreach ($period['months'] as $month) {
-                $tmpResult = null;
+                $tmpResult = [];
 
                 foreach ($branchIds as $branchId) {
                     $details = [];
 
                     foreach ($educations as $education) {
-                        $summaryEducationTotal = SummaryActiveStudentEducation::where('education_id', $education->id)
-                            ->when($branchId, function (Builder $query, $branchId) {
-                                $query->whereHas('summary', function (Builder $query) use ($branchId) {
-                                    $query->where('branch_id', $branchId);
-                                });
-                            })
-                            // ->when($filters['regionId'], function (Builder $query, $regionId) {
-                            //     $query->whereHas('summary', function (Builder $query) use ($regionId) {
-                            //         $query->whereHas('branch', function (Builder $query) use ($regionId) {
-                            //             $query->where('region_id', $regionId);
-                            //         });
-                            //     });
-                            // })
-                            ->whereHas('summary', function (Builder $query) use ($period, $month) {
-                                $query->where(function (Builder $query) use ($period, $month) {
-                                    $query->where(function (Builder $query) use ($period, $month) {
-                                        $query
-                                            ->where('year', $period['year'])
-                                            ->where('month', $month);
-                                    });
-                                });
-                            })
-                            ->get()
-                            ->sum('total');
+                        $key = "{$period['year']}-{$month}-{$branchId}";
+                        $total = $groupedData[$key][$education->id]->total ?? 0;
 
                         $details[] = [
                             'education_id' => $education->id,
                             'education_name' => $education->name,
-                            'total' => $summaryEducationTotal,
+                            'total' => $total,
                         ];
                     }
 
@@ -833,53 +876,52 @@ class AnalysisService
     {
         $filters = $this->getTopUnderFiveFilters();
 
-        $lessons = Lesson::select(['id', 'name'])
-            ->orderBy('name', 'asc')
-            ->get();
+        $year = $filters['periodValues']['year'];
+        $month = $filters['periodValues']['month'];
+        $order = $filters['type'] === 'top' ? 'desc' : 'asc';
 
-        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+        $lessons = Lesson::select(['id', 'name'])->orderBy('name', 'asc')->get();
 
         $summaries = $this->getTopFiveSummaryBuilder()
             ->selectRaw('year, month, SUM(active_student) as total_active_student, branch_id')
+            ->where('year', $year)
+            ->where('month', $month)
+            ->groupBy('branch_id', 'year', 'month')
             ->orderBy('total_active_student', $order)
+            ->limit(5)
             ->get();
 
-        $branchIds = [
-            Arr::get($summaries[0] ?? [], 'branch_id', 0),
-            Arr::get($summaries[1] ?? [], 'branch_id', 0),
-            Arr::get($summaries[2] ?? [], 'branch_id', 0),
-            Arr::get($summaries[3] ?? [], 'branch_id', 0),
-            Arr::get($summaries[4] ?? [], 'branch_id', 0),
-        ];
+        $branchIds = $summaries->pluck('branch_id')->all();
+
+        $lessonTotals = SummaryActiveStudentLesson::select([
+                'lesson_id',
+                'summaries.branch_id',
+                DB::raw('SUM(summary_active_student_lessons.total) as total'),
+            ])
+            ->join('summaries', 'summary_active_student_lessons.summary_id', '=', 'summaries.id')
+            ->whereIn('summaries.branch_id', $branchIds)
+            ->where('summaries.year', $year)
+            ->where('summaries.month', $month)
+            ->groupBy('lesson_id', 'summaries.branch_id')
+            ->get()
+            ->groupBy('branch_id');
 
         $results = collect();
 
         foreach ($branchIds as $branchId) {
-            $details = [];
+            $lessonData = $lessonTotals->get($branchId, collect())->keyBy('lesson_id');
 
-            foreach ($lessons as $lesson) {
-                $summaryLessonTotal = SummaryActiveStudentLesson::where('lesson_id', $lesson->id)
-                    ->whereHas('summary', function (Builder $query) use ($branchId) {
-                        $query->where('branch_id', $branchId);
-                    })
-                    ->whereHas('summary', function (Builder $query) use ($filters) {
-                        $query
-                            ->where('year', $filters['periodValues']['year'])
-                            ->where('month', $filters['periodValues']['month']);
-                    })
-                    ->get()
-                    ->sum('total');
-
-                $details[] = [
+            $details = $lessons->map(function ($lesson) use ($lessonData) {
+                return [
                     'lesson_id' => $lesson->id,
                     'lesson_name' => $lesson->name,
-                    'total' => $summaryLessonTotal,
+                    'total' => $lessonData[$lesson->id]->total ?? 0,
                 ];
-            }
+            })->values();
 
             $results->push([
-                'year' => $filters['periodValues']['year'],
-                'month' =>$filters['periodValues']['month'],
+                'year' => $year,
+                'month' => $month,
                 'branch_id' => $branchId,
                 'details' => $details,
             ]);
@@ -895,53 +937,52 @@ class AnalysisService
     {
         $filters = $this->getTopUnderFiveFilters();
 
-        $educations = Education::select(['id', 'name'])
-            ->orderBy('name', 'asc')
-            ->get();
+        $year = $filters['periodValues']['year'];
+        $month = $filters['periodValues']['month'];
+        $order = $filters['type'] === 'top' ? 'desc' : 'asc';
 
-        $order = $filters['type'] == 'top' ? 'desc' : 'asc';
+        $educations = Education::select(['id', 'name'])->orderBy('name', 'asc')->get();
 
         $summaries = $this->getTopFiveSummaryBuilder()
             ->selectRaw('year, month, SUM(active_student) as total_active_student, branch_id')
+            ->where('year', $year)
+            ->where('month', $month)
+            ->groupBy('branch_id', 'year', 'month')
             ->orderBy('total_active_student', $order)
+            ->limit(5)
             ->get();
 
-        $branchIds = [
-            Arr::get($summaries[0] ?? [], 'branch_id', 0),
-            Arr::get($summaries[1] ?? [], 'branch_id', 0),
-            Arr::get($summaries[2] ?? [], 'branch_id', 0),
-            Arr::get($summaries[3] ?? [], 'branch_id', 0),
-            Arr::get($summaries[4] ?? [], 'branch_id', 0),
-        ];
+        $branchIds = $summaries->pluck('branch_id')->all();
+
+        $educationTotals = SummaryActiveStudentEducation::select([
+                'education_id',
+                'summaries.branch_id',
+                DB::raw('SUM(summary_active_student_education.total) as total'),
+            ])
+            ->join('summaries', 'summary_active_student_education.summary_id', '=', 'summaries.id')
+            ->whereIn('summaries.branch_id', $branchIds)
+            ->where('summaries.year', $year)
+            ->where('summaries.month', $month)
+            ->groupBy('education_id', 'summaries.branch_id')
+            ->get()
+            ->groupBy('branch_id');
 
         $results = collect();
 
         foreach ($branchIds as $branchId) {
-            $details = [];
+            $educationData = $educationTotals->get($branchId, collect())->keyBy('education_id');
 
-            foreach ($educations as $education) {
-                $summaryEducationTotal = SummaryActiveStudentEducation::where('education_id', $education->id)
-                    ->whereHas('summary', function (Builder $query) use ($branchId) {
-                        $query->where('branch_id', $branchId);
-                    })
-                    ->whereHas('summary', function (Builder $query) use ($filters) {
-                        $query
-                            ->where('year', $filters['periodValues']['year'])
-                            ->where('month', $filters['periodValues']['month']);
-                    })
-                    ->get()
-                    ->sum('total');
-
-                $details[] = [
+            $details = $educations->map(function ($education) use ($educationData) {
+                return [
                     'education_id' => $education->id,
                     'education_name' => $education->name,
-                    'total' => $summaryEducationTotal,
+                    'total' => $educationData[$education->id]->total ?? 0,
                 ];
-            }
+            })->values();
 
             $results->push([
-                'year' => $filters['periodValues']['year'],
-                'month' =>$filters['periodValues']['month'],
+                'year' => $year,
+                'month' => $month,
                 'branch_id' => $branchId,
                 'details' => $details,
             ]);

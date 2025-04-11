@@ -15,6 +15,8 @@
 
     <livewire:compare-fee />
 
+    <hr>
+
     <center>
         <h1 class="font-bold">
             {{ __('COMPARING OF TOTAL ROYALTY') }}
@@ -26,6 +28,8 @@
     @livewire(\App\Livewire\Chart\CompareRoyaltyChart::class)
 
     <livewire:compare-royalty />
+
+    <hr>
 
     <center>
         <h1 class="font-bold">
@@ -39,6 +43,8 @@
 
     <livewire:compare-student />
 
+    <hr>
+
     <center>
         <h1 class="font-bold">
             {{ __('COMPARING OF ACTIVE STUDENT BASED ON LESSON') }}
@@ -50,6 +56,8 @@
     @livewire(\App\Livewire\Chart\CompareActiveStudentLessonChart::class)
 
     <livewire:compare-active-student-lesson />
+
+    <hr>
 
     <center>
         <h1 class="font-bold">

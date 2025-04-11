@@ -5,6 +5,7 @@ namespace App\Livewire\Reports;
 use App\Models\Branch;
 use App\Services\AnalysisService;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class TopFiveActiveStudentEducation extends Component
@@ -18,9 +19,11 @@ class TopFiveActiveStudentEducation extends Component
 
     public function render()
     {
+        $records = $this->getRecords();
+
         return view('livewire.reports.top-five-active-student-education', [
-            'records' => $this->getRecords()['results'],
-            'educations' => $this->getRecords()['educations'],
+            'records' => $records['results'],
+            'educations' => $records['educations'],
         ]);
     }
 
@@ -33,8 +36,8 @@ class TopFiveActiveStudentEducation extends Component
         return '-';
     }
 
-    public function getTotalValue(array $data, int $educationId): float
+    public function getTotalValue(Collection $data, int $educationId): string
     {
-        return number_format(collect($data)->firstWhere('education_id', $educationId)['total'] ?? 0);
+        return number_format($data->firstWhere('education_id', $educationId)['total'] ?? 0);
     }
 }

@@ -19,9 +19,11 @@ class TopFiveActiveStudentLesson extends Component
 
     public function render()
     {
+        $records = $this->getRecords();
+
         return view('livewire.reports.top-five-active-student-lesson', [
-            'records' => $this->getRecords()['results'],
-            'lessons' => $this->getRecords()['lessons'],
+            'records' => $records['results'],
+            'lessons' => $records['lessons'],
         ]);
     }
 
@@ -34,8 +36,8 @@ class TopFiveActiveStudentLesson extends Component
         return '-';
     }
 
-    public function getTotalValue(array $data, int $lessonId): float
+    public function getTotalValue(Collection $data, int $lessonId): string
     {
-        return number_format(collect($data)->firstWhere('lesson_id', $lessonId)['total'] ?? 0);
+        return number_format($data->firstWhere('lesson_id', $lessonId)['total'] ?? 0);
     }
 }

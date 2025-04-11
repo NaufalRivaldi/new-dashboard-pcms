@@ -47,7 +47,18 @@ class UserResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Select::make('roles')
                             ->translateLabel()
-                            ->relationship('roles', 'name')
+                            ->relationship(
+                                name: 'roles',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: function (Builder $query) {
+                                    if (!auth()->user()->isSuperAdmin) {
+                                        return $query->whereNotIn('name', ['super_admin']);
+                                    }
+
+                                    return $query;
+                                }
+                            )
+
                             ->preload()
                             ->searchable(),
                     ])
@@ -97,7 +108,17 @@ class UserResource extends Resource
                     ->translateLabel()
                     ->multiple()
                     ->preload()
-                    ->relationship('roles', 'name')
+                    ->relationship(
+                        name: 'roles',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: function (Builder $query) {
+                            if (!auth()->user()->isSuperAdmin) {
+                                return $query->whereNotIn('name', ['super_admin']);
+                            }
+
+                            return $query;
+                        }
+                    )
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

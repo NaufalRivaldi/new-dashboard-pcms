@@ -19,9 +19,11 @@ class CompareActiveStudentEducation extends Component
 
     public function render()
     {
+        $records = $this->getRecords();
+
         return view('livewire.compare-active-student-education', [
-            'records' => $this->getRecords()['results'],
-            'educations' => $this->getRecords()['educations'],
+            'records' => $records['results'],
+            'educations' => $records['educations'],
             'firstBranchName' => $this->getBranchName(
                 Arr::get(app(AnalysisService::class)->getCompareFilters(), 'firstBranchId')
             ),
@@ -40,7 +42,7 @@ class CompareActiveStudentEducation extends Component
         return '-';
     }
 
-    public function getTotalValue(array $data, int $educationId): float
+    public function getTotalValue(array $data, int $educationId): string
     {
         return number_format(collect($data)->firstWhere('education_id', $educationId)['total'] ?? 0);
     }
