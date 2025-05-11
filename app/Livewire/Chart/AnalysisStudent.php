@@ -16,7 +16,9 @@ class AnalysisStudent extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getStudentRecords();
+        $records = app(AnalysisService::class)->getStudentRecords();
+        $data = $records['records'];
+        $isMonthly = $records['isMonthly'];
 
         $datasets = [
             [
@@ -66,10 +68,16 @@ class AnalysisStudent extends ChartWidget
         ];
 
         $labels = $data
-            ->map(function ($summary) {
-                return [
-                    periodFormatter($summary),
-                ];
+            ->map(function ($summary) use ($isMonthly) {
+                $label = null;
+
+                if ($isMonthly) {
+                    $label = periodFormatter($summary);
+                } else {
+                    $label = $summary['year'];
+                }
+
+                return [ $label ];
             })
             ->flatten()
             ->all();

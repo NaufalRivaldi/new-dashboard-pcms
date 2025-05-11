@@ -15,10 +15,13 @@ class TotalReceiveFee extends BaseWidget
     {
         $lang = App::currentLocale();
 
-        $date = Carbon::now()->locale($lang)->isoFormat('MMMM YYYY');
+        $date = Carbon::now()->subMonth()->locale($lang)->isoFormat('MMMM YYYY');
         $totalReceiveFee = app(SummaryService::class)->getTotalReceiveFee();
         $totalRoyalty = app(SummaryService::class)->getTotalRoyalty();
         $totalActiveStudent = app(SummaryService::class)->getTotalActiveStudent();
+        $totalNewStudent = app(SummaryService::class)->getTotalNewStudent();
+        $totalInactiveStudent = app(SummaryService::class)->getTotalInactiveStudent();
+        $totalLeaveStudent = app(SummaryService::class)->getTotalLeaveStudent();
 
         return [
             Stat::make(__('Total Receive Fee'), 'Rp. '.number_format($totalReceiveFee))
@@ -33,6 +36,23 @@ class TotalReceiveFee extends BaseWidget
                 ->description($date)
                 ->descriptionIcon('heroicon-m-arrow-trending-up', IconPosition::Before)
                 ->color('success'),
+            Stat::make(__('Total New Student'), number_format($totalNewStudent))
+                ->description($date)
+                ->descriptionIcon('heroicon-m-arrow-trending-up', IconPosition::Before)
+                ->color('success'),
+            Stat::make(__('Total Inactive Student'), number_format($totalInactiveStudent))
+                ->description($date)
+                ->descriptionIcon('heroicon-m-arrow-trending-down', IconPosition::Before)
+                ->color('danger'),
+            Stat::make(__('Total Leave Student'), number_format($totalLeaveStudent))
+                ->description($date)
+                ->descriptionIcon('heroicon-m-arrow-trending-down', IconPosition::Before)
+                ->color('secondary'),
         ];
+    }
+
+    protected function getColumns(): int
+    {
+        return 2;
     }
 }

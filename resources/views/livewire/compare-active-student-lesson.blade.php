@@ -22,10 +22,10 @@
                 <tr>
                     @foreach ($lessons as $lesson)
                         <th class="px-4 py-3 border-b dark:border-gray-700">
-                            {{ $firstBranchName }}
+                            {{ $firstBranchName ?? $firstRegionName }}
                         </th>
                         <th class="px-4 py-3 border-b dark:border-gray-700">
-                            {{ $secondBranchName }}
+                            {{ $secondBranchName ?? $secondRegionName }}
                         </th>
                     @endforeach
                 </tr>
@@ -36,7 +36,11 @@
                 @foreach ($records as $record)
                     <tr>
                         <td class="px-4 py-3">
-                            {{ \App\Enums\Month::name($record[0]['month']) . " {$record[0]['year']}" }}
+                            @if ($isMonthly)
+                                {{ \App\Enums\Month::name($record[0]['month']) . " {$record[0]['year']}" }}
+                            @else
+                                {{ $record[0]['year'] }}
+                            @endif
                         </td>
                         @foreach ($lessons as $lesson)
                             <td class="px-4 py-3">

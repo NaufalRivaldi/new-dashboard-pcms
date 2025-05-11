@@ -17,9 +17,12 @@ class AnalysisActiveStudentEducation extends Component
 
     public function render()
     {
+        $records = $this->getRecords();
+
         return view('livewire.analysis-active-student-education', [
-            'records' => $this->getRecords()['results'],
-            'educations' => $this->getRecords()['educations'],
+            'records' => $records['results'],
+            'educations' => $records['educations'],
+            'isMonthly' => $records['isMonthly'],
         ]);
     }
 }

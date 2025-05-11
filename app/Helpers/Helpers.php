@@ -2,6 +2,7 @@
 
 use App\Enums\Month;
 use App\Models\Branch;
+use Illuminate\Support\Carbon;
 
 if (! function_exists('periodFormatter')) {
     function periodFormatter(array $summary): string
@@ -29,5 +30,16 @@ if (! function_exists('generateRandomHexColor')) {
         }
 
         return $color;
+    }
+}
+
+if (! function_exists('getFormattedPeriod')) {
+    function getFormattedPeriod(?string $period = null): ?string
+    {
+        if (!is_null($period)) {
+            return Carbon::parse($period)->format('F Y');
+        }
+
+        return null;
     }
 }

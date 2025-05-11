@@ -6,7 +6,6 @@ use App\Models\Branch;
 use App\Models\Education;
 use App\Models\Lesson;
 use App\Models\Old\Cabang;
-use App\Models\Old\Materi;
 use App\Models\Old\Summary as OldSummary;
 use App\Models\Old\User as OldUser;
 use App\Models\Old\Wilayah;
@@ -93,7 +92,10 @@ class TransferOldData extends Command
 
     private function setUsers()
     {
-        $oldUsers = OldUser::all();
+        $oldUsers = OldUser::with([
+                'cabang:id,kode'
+            ])
+            ->get();
 
         $this->info('--- Users ---');
         $bar = $this->output->createProgressBar($oldUsers->count());
@@ -101,12 +103,19 @@ class TransferOldData extends Command
         $bar->start();
 
         foreach ($oldUsers as $oldUser) {
+            $branch = null;
+
+            if ($oldUser->cabang) {
+                $branch = Branch::firstWhere('code', $oldUser->cabang->kode);
+            }
+
             $user = User::create([
                 'name' => $oldUser->nama,
                 'email' => $oldUser->email,
                 'email_verified_at' => now(),
                 'password' => bcrypt('password'),
                 'status' => true,
+                'branch_id' => $branch?->id,
             ]);
 
             switch ($oldUser->level_id) {
@@ -248,6 +257,7 @@ class TransferOldData extends Command
         foreach ($summaries as $summary) {
             $branch = Branch::firstWhere('name', $summary->cabang->nama);
             $user = User::firstWhere('email', $summary->user->email);
+            $approver = User::firstWhere('email', $summary->approver->email ?? 'admin@gmail.com');
             $branch = Branch::firstWhere('name', $summary->cabang->nama);
 
             $newSummary = Summary::create([
@@ -264,7 +274,7 @@ class TransferOldData extends Command
                 'status' => true,
                 'branch_id' => $branch->id,
                 'user_id' => $user['id'],
-                'approver_id' => $summary['approver_id'],
+                'approver_id' => $approver['id'],
             ]);
 
             foreach ($summary->summaryASL as $summaryASL) {

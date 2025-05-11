@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,6 +14,7 @@ class Branch extends Model
     protected $fillable = [
         'code',
         'name',
+        'status',
         'latitude',
         'longitude',
         'region_id',
@@ -27,11 +30,6 @@ class Branch extends Model
         return $this->belongsToMany(User::class, Ownership::class);
     }
 
-    public function ownerships(): HasMany
-    {
-        return $this->hasMany(Ownership::class);
-    }
-
     public function importedFees(): HasMany
     {
         return $this->hasMany(ImportedFee::class);
@@ -40,5 +38,15 @@ class Branch extends Model
     public function summaries(): HasMany
     {
         return $this->hasMany(Summary::class);
+    }
+
+    public function scopeActive(Builder $query)
+    {
+        $query->where('status', Status::Active->value);
+    }
+
+    public function scopeInactive(Builder $query)
+    {
+        $query->where('status', Status::Inactive->value);
     }
 }

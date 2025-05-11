@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ownerships', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+        Schema::table('users', function (Blueprint $table) {
             $table->foreignId('branch_id')
+                ->nullable()
                 ->constrained()
                 ->cascadeOnUpdate()
-                ->cascadeOnDelete();
-
-            $table->timestamps();
+                ->nullOnDelete();
         });
     }
 
@@ -32,6 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ownerships');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

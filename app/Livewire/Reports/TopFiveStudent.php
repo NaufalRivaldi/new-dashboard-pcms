@@ -12,7 +12,7 @@ class TopFiveStudent extends Component
 {
     use InteractsWithPageFilters;
 
-    private function getRecords(): Collection
+    private function getRecords(): array
     {
         return app(AnalysisService::class)->getTopFiveStudentRecords();
     }
@@ -20,7 +20,7 @@ class TopFiveStudent extends Component
     public function render()
     {
         return view('livewire.reports.top-five-student', [
-            'records' => $this->getRecords(),
+            'records' => $this->getRecords()['records'],
         ]);
     }
 

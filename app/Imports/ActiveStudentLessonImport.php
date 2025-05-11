@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\ImportedActiveStudent;
 use App\Models\ImportedActiveStudentDetail;
 use App\Models\Lesson;
+use Exception;
 use Illuminate\Support\Collection;
 
 class ActiveStudentLessonImport extends BaseImport
@@ -29,9 +30,17 @@ class ActiveStudentLessonImport extends BaseImport
 
         $importedActiveStudentDetailData = $collection
             ->map(function ($data) use ($importedActiveStudent, $customData) {
-                $lesson = Lesson::firstOrCreate([
-                    'name' => $data[1],
-                ]);
+                $lesson = Lesson::firstWhere('name', $data[1]);
+
+                if (!$lesson) {
+                    throw new Exception(
+                        __('The :value in :resource is not available, please adjust it to match existing data or contact the admin.', [
+                            'value' => $data[1],
+                            'resource' => __('Lesson'),
+                        ]),
+                        422
+                    );
+                }
 
                 return [
                     'total' => $data[$customData['month']+1] ?? 0,

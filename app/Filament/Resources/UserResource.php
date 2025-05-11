@@ -5,6 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use App\Services\FilterService;
+use App\Services\FormService;
+use App\Services\NotificationService;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -14,7 +17,9 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -61,6 +66,7 @@ class UserResource extends Resource
 
                             ->preload()
                             ->searchable(),
+                        resolve(FormService::class)->branchSelectOption(),
                     ])
                     ->columns(2),
                 Section::make('Auth')
@@ -94,9 +100,9 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('roles')
                     ->translateLabel()
                     ->formatStateUsing(fn (string $state): string => json_decode($state, true)['name']),
-                Tables\Columns\ViewColumn::make('branches')
-                    ->label(__('Branches'))
-                    ->view('filament.tables.columns.user-branches')
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->translateLabel()
+                    ->searchable(),
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 if (!auth()->user()->isSuperAdmin) {
@@ -118,9 +124,22 @@ class UserResource extends Resource
 
                             return $query;
                         }
-                    )
+                    ),
+                resolve(FilterService::class)->filterByBranch(),
             ])
             ->actions([
+                Tables\Actions\Action::make('resetPassword')
+                    ->requiresConfirmation()
+                    ->icon('heroicon-m-cog-6-tooth')
+                    ->color('danger')
+                    ->action(function (Model $record,) {
+                        $record->password = Hash::make('password');
+                        $record->save();
+
+                        NotificationService::success(
+                            title: __('Reset password successfully!'),
+                        );
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -133,7 +152,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\BranchesRelationManager::class,
+            // RelationManagers\BranchesRelationManager::class,
         ];
     }
 

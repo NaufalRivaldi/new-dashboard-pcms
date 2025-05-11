@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Pages\Page;
@@ -31,18 +32,48 @@ class TopOrUnderFive extends Page
     public function filtersForm(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make(__('Filter'))
-                ->schema([
-                    Forms\Components\TextInput::make('period')
+            Tabs::make('Tabs')
+                ->tabs([
+                    Tabs\Tab::make('Monthly')
                         ->translateLabel()
-                        ->type('month'),
-                    Forms\Components\Select::make('type')
+                        ->schema([
+                            Forms\Components\TextInput::make('period')
+                                ->translateLabel()
+                                ->type('month')
+                                ->afterStateUpdated(function (callable $set) {
+                                    $set('year', null);
+                                }),
+                            Forms\Components\Select::make('type')
+                                ->translateLabel()
+                                ->options([
+                                    'top' => 'Top 5',
+                                    'under' => 'Under 5',
+                                ]),
+                        ])
+                        ->columns(2),
+                    Tabs\Tab::make('Yearly')
                         ->translateLabel()
-                        ->options([
-                            'top' => 'Top 5',
-                            'under' => 'Under 5',
-                        ]),
-                ])->columns(3),
+                        ->schema([
+                            Forms\Components\Select::make('year')
+                                ->options(function () {
+                                    return collect(range(now()->year, 2000))
+                                        ->mapWithKeys(fn ($year) => [$year => $year])
+                                        ->toArray();
+                                })
+                                ->searchable()
+                                ->afterStateUpdated(function (callable $set) {
+                                    $set('period', null);
+                                }),
+                            Forms\Components\Select::make('type')
+                                ->translateLabel()
+                                ->options([
+                                    'top' => 'Top 5',
+                                    'under' => 'Under 5',
+                                ]),
+                        ])
+                        ->columns(2),
+                    ])
+                    ->columnSpanFull(),
         ]);
     }
 

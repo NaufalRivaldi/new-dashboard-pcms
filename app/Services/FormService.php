@@ -16,7 +16,9 @@ class FormService
                 name: 'branch',
                 modifyQueryUsing: function (Builder $query) {
                     return $query
-                        ->select('id', 'code', 'name');
+                        ->select('id', 'code', 'name', 'status')
+                        ->active()
+                        ->orderby('name');
                 }
             )
             ->getOptionLabelFromRecordUsing(fn (Model $record) => "[{$record->code}] {$record->name}")

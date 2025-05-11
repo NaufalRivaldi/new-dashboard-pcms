@@ -15,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class ImportService
@@ -212,6 +213,14 @@ class ImportService
 
     public function importAction(string $importModel)
     {
+        $defaultBranchId = null;
+        $currentDate = Carbon::now();
+        $user = auth()->user();
+
+        if (!$user->isSuperAdminOrAdmin) {
+            $defaultBranchId = $user->branch?->id;
+        }
+
         return ExcelImportAction::make()
             ->color("primary")
             ->processCollectionUsing(function (string $modelClass, Collection $collection) {
@@ -224,18 +233,24 @@ class ImportService
             })
             ->use($importModel)
             ->beforeUploadField([
-                app(FormService::class)->branchSelectOption(),
+                app(FormService::class)
+                    ->branchSelectOption()
+                    ->default($defaultBranchId)
+                    ->disabled(!$user->isSuperAdminOrAdmin)
+                    ->dehydrated(),
                 Select::make('month')
                     ->translateLabel()
                     ->options(Month::class)
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->default((int)$currentDate->format('m')),
                 TextInput::make('year')
                     ->translateLabel()
                     ->required()
                     ->numeric()
                     ->minValue(2000)
-                    ->maxValue(2030),
+                    ->maxValue(2030)
+                    ->default((int)$currentDate->format('Y')),
             ])
             ->beforeImport(function (array $data, $livewire, $excelImportAction) {
                 $customData = [

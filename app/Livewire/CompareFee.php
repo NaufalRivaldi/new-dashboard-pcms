@@ -2,41 +2,41 @@
 
 namespace App\Livewire;
 
-use App\Models\Branch;
 use App\Services\AnalysisService;
+use App\Traits\HasReportFilter;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class CompareFee extends Component
 {
-    use InteractsWithPageFilters;
+    use InteractsWithPageFilters, HasReportFilter;
 
-    private function getRecords(): Collection
+    private function getRecords(): array
     {
         return app(AnalysisService::class)->getCompareFeeRecords();
     }
 
     public function render()
     {
+        $filters = app(AnalysisService::class)->getCompareFilters();
+        $records = $this->getRecords();
+
         return view('livewire.compare-fee', [
-            'records' => $this->getRecords(),
+            'records' => $records['records'],
+            'isMonthly' => $records['isMonthly'],
             'firstBranchName' => $this->getBranchName(
-                Arr::get(app(AnalysisService::class)->getCompareFilters(), 'firstBranchId')
+                Arr::get($filters, 'firstBranchId')
             ),
             'secondBranchName' => $this->getBranchName(
-                Arr::get(app(AnalysisService::class)->getCompareFilters(), 'secondBranchId')
+                Arr::get($filters, 'secondBranchId')
+            ),
+            'firstRegionName' => $this->getRegionName(
+                Arr::get($filters, 'firstRegionId')
+            ),
+            'secondRegionName' => $this->getRegionName(
+                Arr::get($filters, 'secondRegionId')
             ),
         ]);
-    }
-
-    public function getBranchName(?int $branchId = null): string
-    {
-        if (!is_null($branchId)) {
-            return Branch::find($branchId)->name ?? '-';
-        }
-
-        return '-';
     }
 }

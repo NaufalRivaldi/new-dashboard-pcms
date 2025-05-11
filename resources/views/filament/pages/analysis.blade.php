@@ -14,7 +14,8 @@
         @if ($this->isRegionFiltered())
             <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
         @endif
-        <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
+
+        <livewire:period-text :filters="$filters" />
     </center>
 
     @livewire(\App\Livewire\Chart\AnalysisFee::class)
@@ -34,7 +35,8 @@
         @if ($this->isRegionFiltered())
             <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
         @endif
-        <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
+
+        <livewire:period-text :filters="$filters" />
     </center>
 
     @livewire(\App\Livewire\Chart\AnalysisRoyalty::class)
@@ -54,7 +56,8 @@
         @if ($this->isRegionFiltered())
             <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
         @endif
-        <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
+
+        <livewire:period-text :filters="$filters" />
     </center>
 
     @livewire(\App\Livewire\Chart\AnalysisStudent::class)
@@ -74,7 +77,8 @@
         @if ($this->isRegionFiltered())
             <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
         @endif
-        <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
+
+        <livewire:period-text :filters="$filters" />
     </center>
 
     @livewire(\App\Livewire\Chart\AnalysisActiveStudentLesson::class)
@@ -94,7 +98,8 @@
         @if ($this->isRegionFiltered())
             <h2>{{ __('REGION: :region', ['region' => $this->getRegionName($filters['region_id'])]) }}</h2>
         @endif
-        <h2>{{ __('PERIOD: :firstPeriod - :secondPeriod', ['firstPeriod' => $this->getFormattedPeriod($filters['start_period']), 'secondPeriod' => $this->getFormattedPeriod($filters['end_period'])]) }}</h2>
+
+        <livewire:period-text :filters="$filters" />
     </center>
 
     @livewire(\App\Livewire\Chart\AnalysisActiveStudentEducation::class)

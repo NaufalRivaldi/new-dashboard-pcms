@@ -17,7 +17,7 @@ class TopFiveStudentChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getTopFiveStudentRecords();
+        $data = app(AnalysisService::class)->getTopFiveStudentRecords()['records'];
 
         $datasets = [
             [

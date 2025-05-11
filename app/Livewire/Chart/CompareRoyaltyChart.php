@@ -16,7 +16,9 @@ class CompareRoyaltyChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getCompareRoyaltyRecords();
+        $records = app(AnalysisService::class)->getCompareRoyaltyRecords();
+        $data = $records['records'];
+        $isMonthly = $records['isMonthly'];
 
         $datasets = [
             [
@@ -37,10 +39,16 @@ class CompareRoyaltyChart extends ChartWidget
 
         $labels = $data
             ->flatten(1)
-            ->map(function ($summary) {
-                return [
-                    periodWithBranchFormatter($summary),
-                ];
+            ->map(function ($summary) use ($isMonthly) {
+                $label = null;
+
+                if ($isMonthly) {
+                    $label = periodFormatter($summary);
+                } else {
+                    $label = $summary['year'];
+                }
+
+                return [ $label ];
             })
             ->flatten()
             ->all();

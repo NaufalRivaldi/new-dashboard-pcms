@@ -17,7 +17,9 @@ class AnalysisFee extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getFeeRecords();
+        $records = app(AnalysisService::class)->getFeeRecords();
+        $data = $records['records'];
+        $isMonthly = $records['isMonthly'];
 
         $datasets = [
             [
@@ -58,10 +60,16 @@ class AnalysisFee extends ChartWidget
         ];
 
         $labels = $data
-            ->map(function ($summary) {
-                return [
-                    periodFormatter($summary),
-                ];
+            ->map(function ($summary) use ($isMonthly) {
+                $label = null;
+
+                if ($isMonthly) {
+                    $label = periodFormatter($summary);
+                } else {
+                    $label = $summary['year'];
+                }
+
+                return [ $label ];
             })
             ->flatten()
             ->all();

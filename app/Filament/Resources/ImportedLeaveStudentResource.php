@@ -15,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 
 class ImportedLeaveStudentResource extends ImportedNewStudentResource
 {
@@ -35,6 +36,14 @@ class ImportedLeaveStudentResource extends ImportedNewStudentResource
 
     public static function form(Form $form): Form
     {
+        $defaultBranchId = null;
+        $currentDate = Carbon::now();
+        $user = auth()->user();
+
+        if (!$user->isSuperAdminOrAdmin) {
+            $defaultBranchId = $user->branch?->id;
+        }
+
         return $form
             ->schema([
                 Forms\Components\Grid::make(3)->schema([
@@ -43,12 +52,15 @@ class ImportedLeaveStudentResource extends ImportedNewStudentResource
                             app(FormService::class)
                                 ->branchSelectOption()
                                 ->disabledOn('edit')
-                                ->live(onBlur: true),
+                                ->live(onBlur: true)
+                                ->default($defaultBranchId)
+                                ->disabled(!$user->isSuperAdminOrAdmin),
                         ]),
                         Forms\Components\Section::make(__('Date'))->schema([
                             Forms\Components\Select::make('month')
                                 ->translateLabel()
                                 ->options(Month::class)
+                                ->default((int)$currentDate->format('m'))
                                 ->searchable()
                                 ->required()
                                 ->disabledOn('edit')
@@ -56,6 +68,7 @@ class ImportedLeaveStudentResource extends ImportedNewStudentResource
                             Forms\Components\TextInput::make('year')
                                 ->translateLabel()
                                 ->required()
+                                ->default((int)$currentDate->format('Y'))
                                 ->numeric()
                                 ->minValue(2000)
                                 ->maxValue(2030)

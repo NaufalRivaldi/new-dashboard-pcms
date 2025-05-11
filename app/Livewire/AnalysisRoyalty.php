@@ -11,15 +11,18 @@ class AnalysisRoyalty extends Component
 {
     use InteractsWithPageFilters;
 
-    private function getRecords(): Collection
+    private function getRecords(): array
     {
         return app(AnalysisService::class)->getRoyaltyRecords();
     }
 
     public function render()
     {
+        $records = $this->getRecords();
+
         return view('livewire.analysis-royalty', [
-            'records' => $this->getRecords(),
+            'records' => $records['records'],
+            'isMonthly' => $records['isMonthly'],
         ]);
     }
 }

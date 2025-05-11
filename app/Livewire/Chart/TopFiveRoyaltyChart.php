@@ -17,7 +17,7 @@ class TopFiveRoyaltyChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getTopFiveRoyaltyRecords();
+        $data = app(AnalysisService::class)->getTopFiveRoyaltyRecords()['records'];
 
         $datasets = [
             [

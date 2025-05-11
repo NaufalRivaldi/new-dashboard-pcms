@@ -51,9 +51,6 @@ class ReportBranchNotImportedDataResource extends Resource
                 Tables\Columns\TextColumn::make('region.name')
                     ->translateLabel()
                     ->searchable(isIndividual: true),
-                Tables\Columns\ViewColumn::make('ownerships')
-                    ->translateLabel()
-                    ->view('filament.tables.columns.branch-ownerships'),
             ])
             ->filters([
                 Filter::make('period')

@@ -16,14 +16,16 @@ class AnalysisActiveStudentEducation extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getActiveStudentEducationRecords();
+        $records = app(AnalysisService::class)->getActiveStudentEducationRecords();
+        $data = $records['results'];
+        $isMonthly = $records['isMonthly'];
 
         $datasets = [];
 
-        foreach ($data['educations'] as $education) {
+        foreach ($records['educations'] as $education) {
             $datasets[] = [
                 'label' => $education->name,
-                'data' => collect($data['results'])
+                'data' => collect($data)
                     ->map(function ($result) use ($education) {
                         return [
                             collect($result['details'])
@@ -39,11 +41,17 @@ class AnalysisActiveStudentEducation extends ChartWidget
             ];
         }
 
-        $labels = collect($data['results'])
-            ->map(function ($summary) {
-                return [
-                    periodFormatter($summary),
-                ];
+        $labels = $data
+            ->map(function ($summary) use ($isMonthly) {
+                $label = null;
+
+                if ($isMonthly) {
+                    $label = periodFormatter($summary);
+                } else {
+                    $label = $summary['year'];
+                }
+
+                return [ $label ];
             })
             ->flatten()
             ->all();

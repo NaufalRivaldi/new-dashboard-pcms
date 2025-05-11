@@ -17,7 +17,7 @@ class TopFiveFeeChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getTopFiveFeeRecords();
+        $data = app(AnalysisService::class)->getTopFiveFeeRecords()['records'];
 
         $datasets = [
             [

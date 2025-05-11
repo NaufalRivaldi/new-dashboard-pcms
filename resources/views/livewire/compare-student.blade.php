@@ -37,28 +37,28 @@
                 </tr>
                 <tr>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $firstBranchName }}
+                        {{ $firstBranchName ?? $firstRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $secondBranchName }}
+                        {{ $secondBranchName ?? $secondRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $firstBranchName }}
+                        {{ $firstBranchName ?? $firstRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $secondBranchName }}
+                        {{ $secondBranchName ?? $secondRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $firstBranchName }}
+                        {{ $firstBranchName ?? $firstRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $secondBranchName }}
+                        {{ $secondBranchName ?? $secondRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $firstBranchName }}
+                        {{ $firstBranchName ?? $firstRegionName }}
                     </th>
                     <th class="px-4 py-3 border-b dark:border-gray-700">
-                        {{ $secondBranchName }}
+                        {{ $secondBranchName ?? $secondRegionName }}
                     </th>
                 </tr>
             </thead>
@@ -68,7 +68,11 @@
                 @foreach ($records as $record)
                     <tr>
                         <td class="px-4 py-3">
-                            {{ \App\Enums\Month::name($record[0]['month']) . " {$record[0]['year']}" }}
+                            @if ($isMonthly)
+                                {{ \App\Enums\Month::name($record[0]['month']) . " {$record[0]['year']}" }}
+                            @else
+                                {{ $record[0]['year'] }}
+                            @endif
                         </td>
                         <td class="px-4 py-3">{{ number_format($record[0]['total_active_student']) }}</td>
                         <td class="px-4 py-3">{{ number_format($record[1]['total_active_student']) }}</td>

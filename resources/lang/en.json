@@ -3,6 +3,9 @@
     "Total Receive Fee": "Total Receive Fee",
     "Total Royalty": "Total Royalty",
     "Total Active Student": "Total Active Student",
+    "Total New Student": "Total New Student",
+    "Total Inactive Student": "Total Inactive Student",
+    "Total Leave Student": "Total Leave Student",
     "Branch": "Branch",
     "Code": "Code",
     "Name": "Name",
@@ -78,5 +81,8 @@
     ":type 5 SUMMARY OF ACTIVE STUDENT BASED ON EDUCATION": ":type 5 SUMMARY OF ACTIVE STUDENT BASED ON EDUCATION",
     "REGION: :region": "REGION: :region",
     "All Branches": "All Branches",
-    "All Region": "All Region"
+    "All Region": "All Region",
+    "Reset password": "Reset password",
+    "Reset password successfully!": "Reset password successfully!",
+    "The :value in :resource is not available, please adjust it to match existing data or contact the admin.": "The :value in :resource is not available, please adjust it to match existing data or contact the admin."
 }

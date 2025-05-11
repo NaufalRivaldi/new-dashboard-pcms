@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use App\Models\Branch;
 use App\Models\Region;
-use Illuminate\Support\Carbon;
 
 trait HasReportFilter
 {
@@ -17,9 +16,9 @@ trait HasReportFilter
         return $this->defaultBranchName();
     }
 
-    protected function defaultBranchName(): string
+    protected function defaultBranchName(): ?string
     {
-        return __('All Branches');
+        return null;
     }
 
     public function getRegionName(?int $regionId = null): ?string
@@ -31,17 +30,8 @@ trait HasReportFilter
         return $this->defaultRegionName();
     }
 
-    protected function defaultRegionName(): string
+    protected function defaultRegionName(): ?string
     {
-        return __('All Region');
-    }
-
-    public function getFormattedPeriod(?string $period = null): ?string
-    {
-        if (!is_null($period)) {
-            return Carbon::parse($period)->format('F Y');
-        }
-
         return null;
     }
 
@@ -51,8 +41,6 @@ trait HasReportFilter
             isset($this->filters['branch_id'])
             && !is_null($this->filters['branch_id'])
             && $this->filters['branch_id'] != ''
-        ) || (
-            !isset($this->filters['region_id'])
         );
     }
 
@@ -61,5 +49,21 @@ trait HasReportFilter
         return isset($this->filters['region_id'])
             && !is_null($this->filters['region_id'])
             && $this->filters['region_id'] != '';
+    }
+
+    public function isComparedBranchFiltered(): bool
+    {
+        return (
+            isset($this->filters['first_branch_id'])
+            && isset($this->filters['second_branch_id'])
+        );
+    }
+
+    public function isComparedRegionFiltered(): bool
+    {
+        return (
+            isset($this->filters['first_region_id'])
+            && isset($this->filters['second_region_id'])
+        );
     }
 }

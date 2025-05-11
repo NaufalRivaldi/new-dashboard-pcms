@@ -17,7 +17,11 @@
                 @foreach ($records as $record)
                     <tr>
                         <td class="px-4 py-3">
-                            {{ \App\Enums\Month::name($record['month']) . " {$record['year']}" }}
+                            @if ($isMonthly)
+                                {{ \App\Enums\Month::name($record['month']) . " {$record['year']}" }}
+                            @else
+                                {{ $record['year'] }}
+                            @endif
                         </td>
                         <td class="px-4 py-3">{{ number_format($record['total_active_student']) }}</td>
                         <td class="px-4 py-3">{{ number_format($record['total_new_student']) }}</td>

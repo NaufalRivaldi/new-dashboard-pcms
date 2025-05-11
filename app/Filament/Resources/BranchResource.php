@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Status;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Filament\Resources\BranchResource\RelationManagers;
 use App\Models\Branch;
@@ -55,6 +56,11 @@ class BranchResource extends Resource
                             )
                             ->searchable()
                             ->preload(),
+                        Forms\Components\Select::make('status')
+                            ->translateLabel()
+                            ->options(Status::class)
+                            ->required()
+                            ->default(Status::Active->value),
                     ])->columns(2),
                 Forms\Components\Section::make(__('Location'))
                     ->description(__('Set the location to add a pinpoint on the map.'))
@@ -64,31 +70,6 @@ class BranchResource extends Resource
                         Forms\Components\TextInput::make('longitude')
                             ->maxLength(255),
                     ])->columns(2),
-                Forms\Components\Section::make('Others')
-                    ->schema([
-                        Forms\Components\Repeater::make('ownerships')
-                            ->translateLabel()
-                            ->relationship()
-                            ->schema([
-                                Forms\Components\Select::make('user_id')
-                                    ->label(__('Select user'))
-                                    ->relationship(
-                                        name: 'user',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: function (Builder $query) {
-                                            return $query
-                                                ->select('id', 'name')
-                                                ->role([
-                                                    'Owner'
-                                                ]);
-                                        }
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->required(),
-                            ])
-                            ->grid(2),
-                    ])->columns(1),
             ]);
     }
 
@@ -110,11 +91,9 @@ class BranchResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('region.name')
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('ownerships_count')
-                    ->label(__('Total Ownerships'))
-                    ->counts('ownerships')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\SelectColumn::make('status')
+                    ->translateLabel()
+                    ->options(Status::class),
             ])
             ->filters([
                 SelectFilter::make('region_id')

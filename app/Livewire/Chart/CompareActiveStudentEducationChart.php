@@ -16,14 +16,16 @@ class CompareActiveStudentEducationChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = app(AnalysisService::class)->getCompareActiveStudentEducationRecords();
+        $records = app(AnalysisService::class)->getCompareActiveStudentEducationRecords();
+        $data = $records['results'];
+        $isMonthly = $records['isMonthly'];
 
         $datasets = [];
 
-        foreach ($data['educations'] as $education) {
+        foreach ($records['educations'] as $education) {
             $datasets[] = [
                 'label' => $education->name,
-                'data' => collect($data['results'])
+                'data' => collect($data)
                     ->map(function ($result) use ($education) {
                         return [
                             collect($result[0]['details'])
@@ -43,12 +45,18 @@ class CompareActiveStudentEducationChart extends ChartWidget
             ];
         }
 
-        $labels = collect($data['results'])
+        $labels = collect($records['results'])
             ->flatten(1)
-            ->map(function ($summary) {
-                return [
-                    periodWithBranchFormatter($summary),
-                ];
+            ->map(function ($summary) use ($isMonthly) {
+                $label = null;
+
+                if ($isMonthly) {
+                    $label = periodFormatter($summary);
+                } else {
+                    $label = $summary['year'];
+                }
+
+                return [ $label ];
             })
             ->flatten()
             ->all();
