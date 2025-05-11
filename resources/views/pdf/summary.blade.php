@@ -101,7 +101,7 @@
         <table width="100%">
             @foreach($record->summaryActiveStudentLesson as $activeStudent)
             <tr>
-                <td>{{ $activeStudent->lesson->name }}</td>
+                <td>{{ $activeStudent?->lesson?->name ?? '-' }}</td>
                 <td align="right">{{ $activeStudent->total }}</td>
             </tr>
             @endforeach
@@ -113,7 +113,7 @@
         <table width="100%">
             @foreach($record->summaryActiveStudentEducation as $activeStudent)
             <tr>
-                <td>{{ $activeStudent->education->name }}</td>
+                <td>{{ $activeStudent?->education?->name ?? '-' }}</td>
                 <td align="right">{{ $activeStudent->total }}</td>
             </tr>
             @endforeach
