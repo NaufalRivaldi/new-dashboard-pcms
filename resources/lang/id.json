@@ -85,5 +85,9 @@
     "All Region": "Semua Wilayah",
     "Reset password": "Reset password",
     "Reset password successfully!": "Reset password berhasil!",
-    "The :value in :resource is not available, please adjust it to match existing data or contact the admin.": "Data :value pada :resource tidak tersedia, silahkan sesuaikan dengan data yang ada atau hubungi admin."
+    "The :value in :resource is not available, please adjust it to match existing data or contact the admin.": "Data :value pada :resource tidak tersedia, silahkan sesuaikan dengan data yang ada atau hubungi admin.",
+    "Period: :startPeriod ~ :endPeriod": "Periode: :startPeriod ~ :endPeriod",
+    "BRANCH: :firstBranch & :secondBranch": "CABANG: :firstBranch & :secondBranch",
+    "REGION: :firstRegion & :secondRegion": "WILAYAH: :firstRegion & :secondRegion",
+    "Period: :period": "Periode: :period"
 }

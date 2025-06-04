@@ -43,3 +43,14 @@ if (! function_exists('getFormattedPeriod')) {
         return null;
     }
 }
+
+if (! function_exists('getBranchName')) {
+    function getBranchName(?int $branchId = null): string
+    {
+        if (!is_null($branchId)) {
+            return Branch::find($branchId)->name ?? '-';
+        }
+
+        return '-';
+    }
+}

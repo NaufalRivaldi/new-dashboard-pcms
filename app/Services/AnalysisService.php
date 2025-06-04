@@ -10,12 +10,11 @@ use App\Models\SummaryActiveStudentLesson;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AnalysisService
 {
-    private function getFilters(): array
+    protected function getFilters(): array
     {
         $previousUrl = url()->previous();
         $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
@@ -1026,11 +1025,6 @@ class AnalysisService
             ->whereIn($comparedIdName, $comparedIds)
             ->where(function ($query) use ($periodPairs, $isMonthly) {
                 foreach ($periodPairs as $pair) {
-                    $query->orWhere(function ($q) use ($pair) {
-                        $q->where('summaries.year', $pair['year'])
-                        ->where('summaries.month', $pair['month']);
-                    });
-
                     $query->orWhere(function ($q) use ($pair, $isMonthly) {
                         if ($isMonthly) {
                             $q
@@ -1184,11 +1178,6 @@ class AnalysisService
             ->whereIn($comparedIdName, $comparedIds)
             ->where(function ($query) use ($periodPairs, $isMonthly) {
                 foreach ($periodPairs as $pair) {
-                    $query->orWhere(function ($q) use ($pair) {
-                        $q->where('summaries.year', $pair['year'])
-                        ->where('summaries.month', $pair['month']);
-                    });
-
                     $query->orWhere(function ($q) use ($pair, $isMonthly) {
                         if ($isMonthly) {
                             $q
@@ -1783,7 +1772,7 @@ class AnalysisService
         ];
     }
 
-    private function getPeriodValues(
+    protected function getPeriodValues(
         string $startPeriod,
         string $endPeriod,
         bool $isMonthly = true,

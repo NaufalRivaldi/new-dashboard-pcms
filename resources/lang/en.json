@@ -84,5 +84,9 @@
     "All Region": "All Region",
     "Reset password": "Reset password",
     "Reset password successfully!": "Reset password successfully!",
-    "The :value in :resource is not available, please adjust it to match existing data or contact the admin.": "The :value in :resource is not available, please adjust it to match existing data or contact the admin."
+    "The :value in :resource is not available, please adjust it to match existing data or contact the admin.": "The :value in :resource is not available, please adjust it to match existing data or contact the admin.",
+    "Period: :startPeriod ~ :endPeriod": "Period: :startPeriod ~ :endPeriod",
+    "BRANCH: :firstBranch & :secondBranch": "BRANCH: :firstBranch & :secondBranch",
+    "REGION: :firstRegion & :secondRegion": "REGION: :firstRegion & :secondRegion",
+    "Period: :period": "Period: :period"
 }

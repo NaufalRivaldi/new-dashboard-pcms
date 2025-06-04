@@ -85,6 +85,20 @@
                     </tr>
                 @endforeach
             </tbody>
+
+            <tbody class="bg-gray-50 text-left text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-white">
+                <tr>
+                    <td class="px-4 py-3">{{ __('Total') }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('0.total_active_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('1.total_active_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('0.total_new_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('1.total_new_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('0.total_inactive_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('1.total_inactive_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('0.total_leave_student')) }}</td>
+                    <td class="px-4 py-3">{{ number_format($records->sum('1.total_leave_student')) }}</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </div>

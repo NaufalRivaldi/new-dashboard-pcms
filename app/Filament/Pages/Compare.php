@@ -7,6 +7,7 @@ use App\Models\Region;
 use App\Traits\HasReportFilter;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
@@ -27,6 +28,32 @@ class Compare extends Page
     public function persistsFiltersInSession(): bool
     {
         return false;
+    }
+
+    protected function getActions(): array
+    {
+        return [
+            Action::make('Print')
+                ->icon('heroicon-o-printer')
+                ->url(function (): string {
+                        $previousUrl = url()->previous();
+                        $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
+
+                        parse_str($queryParams, $params);
+
+                        return route('print.compare', [
+                            'start_period' => data_get($params, 'filters.start_period'),
+                            'end_period' => data_get($params, 'filters.end_period'),
+                            'start_year' => data_get($params, 'filters.start_year'),
+                            'end_year' => data_get($params, 'filters.end_year'),
+                            'first_branch_id' => data_get($params, 'filters.first_branch_id'),
+                            'second_branch_id' => data_get($params, 'filters.second_branch_id'),
+                            'first_region_id' => data_get($params, 'filters.first_region_id'),
+                            'second_region_id' => data_get($params, 'filters.second_region_id'),
+                            'locale' => app()->currentLocale(),
+                        ]);
+                }, shouldOpenInNewTab: true),
+        ];
     }
 
     public function filtersForm(Form $form): Form

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
@@ -27,6 +28,27 @@ class TopOrUnderFive extends Page
     public function persistsFiltersInSession(): bool
     {
         return false;
+    }
+
+    protected function getActions(): array
+    {
+        return [
+            Action::make('Print')
+                ->icon('heroicon-o-printer')
+                ->url(function (): string {
+                        $previousUrl = url()->previous();
+                        $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
+
+                        parse_str($queryParams, $params);
+
+                        return route('print.top-or-under-five', [
+                            'period' => data_get($params, 'filters.period'),
+                            'year' => data_get($params, 'filters.year'),
+                            'type' => data_get($params, 'filters.type'),
+                            'locale' => app()->currentLocale(),
+                        ]);
+                }, shouldOpenInNewTab: true),
+        ];
     }
 
     public function filtersForm(Form $form): Form

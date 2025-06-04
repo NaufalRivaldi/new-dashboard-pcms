@@ -52,6 +52,9 @@ class ReportBranchNotImportedDataResource extends Resource
                     ->translateLabel()
                     ->searchable(isIndividual: true),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->orderBy('code');
+            })
             ->filters([
                 Filter::make('period')
                     ->form([
@@ -62,7 +65,11 @@ class ReportBranchNotImportedDataResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->where(function (Builder $query) use ($data) {
-                                $date = collect(explode('-', $data['period'] ?? Carbon::now()->format('Y-m')))
+                                $period = isset($data['period']) && $data['period'] != ''
+                                    ? $data['period']
+                                    : Carbon::now()->format('Y-m');
+
+                                $date = collect(explode('-', $period))
                                     ->map(fn ($value) => (int) $value)
                                     ->all();
 

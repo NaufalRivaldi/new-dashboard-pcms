@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\Region;
 use App\Traits\HasReportFilter;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
@@ -26,6 +27,30 @@ class Analysis extends Page
     public function persistsFiltersInSession(): bool
     {
         return false;
+    }
+
+    protected function getActions(): array
+    {
+        return [
+            Action::make('Print')
+                ->icon('heroicon-o-printer')
+                ->url(function (): string {
+                        $previousUrl = url()->previous();
+                        $queryParams = parse_url($previousUrl, PHP_URL_QUERY);
+
+                        parse_str($queryParams, $params);
+
+                        return route('print.analysis', [
+                            'start_period' => data_get($params, 'filters.start_period'),
+                            'end_period' => data_get($params, 'filters.end_period'),
+                            'start_year' => data_get($params, 'filters.start_year'),
+                            'end_year' => data_get($params, 'filters.end_year'),
+                            'branch_id' => data_get($params, 'filters.branch_id'),
+                            'region_id' => data_get($params, 'filters.region_id'),
+                            'locale' => app()->currentLocale(),
+                        ]);
+                }, shouldOpenInNewTab: true),
+        ];
     }
 
     public function filtersForm(Form $form): Form

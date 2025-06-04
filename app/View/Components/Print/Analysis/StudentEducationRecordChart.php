@@ -1,35 +1,38 @@
 <?php
 
-namespace App\Livewire\Chart;
+namespace App\View\Components\Print\Analysis;
 
-use App\Services\AnalysisService;
-use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Closure;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
+use Illuminate\View\Component;
 
-class AnalysisActiveStudentLesson extends ChartWidget
+class StudentEducationRecordChart extends Component
 {
-    use InteractsWithPageFilters;
-
-    protected static ?string $heading = null;
-
-    protected static ?string $pollingInterval = null;
+    /**
+     * Create a new component instance.
+     */
+    public function __construct(
+        protected Collection $records,
+        protected Collection $educations,
+        protected bool $isMonthly = true,
+    ) {}
 
     protected function getData(): array
     {
-        $records = app(AnalysisService::class)->getActiveStudentLessonRecords();
-        $data = $records['results'];
-        $isMonthly = $records['isMonthly'];
+        $data = $this->records;
+        $isMonthly = $this->isMonthly;
 
         $datasets = [];
 
-        foreach ($records['lessons'] as $lesson) {
+        foreach ($this->educations as $education) {
             $datasets[] = [
-                'label' => $lesson->name,
+                'label' => $education->name,
                 'data' => collect($data)
-                    ->map(function ($result) use ($lesson) {
+                    ->map(function ($result) use ($education) {
                         return [
                             collect($result['details'])
-                                ->firstWhere('lesson_id', $lesson->id)
+                                ->firstWhere('education_id', $education->id)
                                 ['total']
                                 ?? 0
                         ];
@@ -62,8 +65,13 @@ class AnalysisActiveStudentLesson extends ChartWidget
         ];
     }
 
-    protected function getType(): string
+    /**
+     * Get the view / contents that represent the component.
+     */
+    public function render(): View|Closure|string
     {
-        return 'bar';
+        return view('components.print.analysis.student-education-record-chart', [
+            'data' => $this->getData(),
+        ]);
     }
 }

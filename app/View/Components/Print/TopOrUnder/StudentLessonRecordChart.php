@@ -1,28 +1,27 @@
 <?php
 
-namespace App\Livewire\Chart;
+namespace App\View\Components\Print\TopOrUnder;
 
-use App\Services\AnalysisService;
-use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use App\Models\Branch;
+use Closure;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
+use Illuminate\View\Component;
 
-class AnalysisActiveStudentLesson extends ChartWidget
+class StudentLessonRecordChart extends Component
 {
-    use InteractsWithPageFilters;
-
-    protected static ?string $heading = null;
-
-    protected static ?string $pollingInterval = null;
+    public function __construct(
+        protected Collection $records,
+        protected Collection $lessons,
+    ) {}
 
     protected function getData(): array
     {
-        $records = app(AnalysisService::class)->getActiveStudentLessonRecords();
-        $data = $records['results'];
-        $isMonthly = $records['isMonthly'];
+        $data = $this->records;
 
         $datasets = [];
 
-        foreach ($records['lessons'] as $lesson) {
+        foreach ($this->lessons as $lesson) {
             $datasets[] = [
                 'label' => $lesson->name,
                 'data' => collect($data)
@@ -42,16 +41,8 @@ class AnalysisActiveStudentLesson extends ChartWidget
         }
 
         $labels = $data
-            ->map(function ($summary) use ($isMonthly) {
-                $label = null;
-
-                if ($isMonthly) {
-                    $label = periodFormatter($summary);
-                } else {
-                    $label = $summary['year'];
-                }
-
-                return [ $label ];
+            ->map(function ($summary) {
+                return Branch::find($summary['branch_id'])->name ?? '-';
             })
             ->flatten()
             ->all();
@@ -62,8 +53,13 @@ class AnalysisActiveStudentLesson extends ChartWidget
         ];
     }
 
-    protected function getType(): string
+    /**
+     * Get the view / contents that represent the component.
+     */
+    public function render(): View|Closure|string
     {
-        return 'bar';
+        return view('components.print.top-or-under.student-lesson-record-chart', [
+            'data' => $this->getData(),
+        ]);
     }
 }
